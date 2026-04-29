@@ -622,16 +622,15 @@ response to a persistent and often informal exposure problem.
 
 ## Data availability statement
 
-Data and code are available in a public, open access GitHub repository.
-The full Python simulation, including Monte Carlo uncertainty, parameter
-correlations, plots and trial-level exports, is available at
-https://github.com/levine63/Sentinel-Firewall/blob/main/submission_package/public_code_and_data/sentinel_firewall_model.py.
-A deterministic spreadsheet with editable modal parameter values and live
-formulas is available at
-https://github.com/levine63/Sentinel-Firewall/blob/main/submission_package/public_code_and_data/Simulating_sentinel_safe_products.xlsx.
-The spreadsheet is designed for easier local adaptation; the Python code
-remains the authoritative source for the probabilistic sensitivity
-analysis.
+The code, spreadsheet, and supplementary materials are archived on
+Zenodo at doi:10.5281/zenodo.19898684 and mirrored in a public GitHub
+repository at https://github.com/levine63/Sentinel-Firewall. The full
+Python simulation, including Monte Carlo uncertainty, parameter
+correlations, plots and trial-level exports, is available in the public
+repository together with a deterministic spreadsheet with editable modal
+parameter values and live formulas. The spreadsheet is designed for
+easier local adaptation; the Python code remains the authoritative
+source for the probabilistic sensitivity analysis.
 
 ## Ethics statements
 

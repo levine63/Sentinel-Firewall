@@ -44,8 +44,12 @@ The main paper figures are:
   Current paper-ready package, including the manuscript, appendices,
   public code, public workbook, figures, policy brief, and synced
   output tables.
-- `sentinel_firewall_model.py`
-  Working Python model at the repository root.
+- `outputs/`
+  Latest local rerun outputs used to sync the public package.
+- `source_inputs/`
+  Local working notes and source materials.
+- `archive/`
+  Superseded working files and old drafts.
 
 ## Reproducing the analysis
 
@@ -67,6 +71,10 @@ The script writes:
 ## Current public repository URL
 
 - [https://github.com/levine63/Sentinel-Firewall](https://github.com/levine63/Sentinel-Firewall)
+
+## Archived release DOI
+
+- [https://doi.org/10.5281/zenodo.19898684](https://doi.org/10.5281/zenodo.19898684)
 
 ## Notes
 

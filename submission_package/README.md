@@ -17,11 +17,17 @@ Use these files as the current source of truth:
 - Public Monte Carlo summary table: `public_code_and_data/summary_table.csv`
 - Public validation checks: `public_code_and_data/validation_checks.csv`
 
+Older manuscript drafts and superseded convenience copies have been moved to `archive/` to reduce confusion.
+
 ## Public repository
 
 The public repository is:
 
 - `https://github.com/levine63/Sentinel-Firewall`
+
+The archived Zenodo record is:
+
+- `https://doi.org/10.5281/zenodo.19898684`
 
 Planned public file links:
 
@@ -91,6 +97,10 @@ The Python script is the **authoritative probabilistic model**.
 ### `presentation/`
 
 - economist talk source and slide deck
+
+### `archive/`
+
+- superseded workbook/manuscript convenience copies
 
 ## Reproducing the model outputs
 
