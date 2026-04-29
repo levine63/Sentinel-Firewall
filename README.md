@@ -3,8 +3,8 @@
 This repository contains the manuscript, reproducible code, local-
 adaptation workbook, figures, and supplementary materials for:
 
-**The Sentinel Firewall: A Health-System Strategy to Decouple Informal
-Industrialization from Lead Exposure in LMICs**
+**The Sentinel Firewall: a model-based economic evaluation of
+safe-product substitution to reduce lead exposure in LMICs**
 
 The project asks whether maternal and child health systems can reduce
 lead exposure by replacing hazardous consumer products with safer
@@ -29,7 +29,7 @@ The main files most readers will want are:
 - `submission_package/public_code_and_data/Simulating_sentinel_safe_products.xlsx`
 - `submission_package/public_code_and_data/summary_table.csv`
 - `submission_package/public_code_and_data/validation_checks.csv`
-- `submission_package/main_manuscript/manuscript_bmj_ready_from_word_cleaned.docx`
+- `submission_package/main_manuscript/manuscript_bmj_ready_research_cheers.docx`
 - `submission_package/supplementary_materials/technical_appendix.docx`
 - `submission_package/supplementary_materials/parameter_citation_table.docx`
 

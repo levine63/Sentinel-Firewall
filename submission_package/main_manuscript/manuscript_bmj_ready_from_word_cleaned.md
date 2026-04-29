@@ -1,4 +1,4 @@
-# The Sentinel Firewall: A Health-System Strategy to Decouple Informal Industrialization from Lead Exposure in LMICs
+# The Sentinel Firewall: a model-based economic evaluation of safe-product substitution to reduce lead exposure in LMICs
 
 David I Levine
 
@@ -11,35 +11,59 @@ Correspondence to: Professor David I Levine; levine@berkeley.edu
 
 ## Abstract
 
+### Introduction
+
 Lead exposure remains an important and under-addressed driver of
 neurodevelopmental and cardiovascular inequity in low- and middle-income
 countries (LMICs). Much of the remaining burden now comes from informal
 consumer products that households cannot easily identify and regulators
 do not easily control, including artisanal cookware, traditional
-cosmetics and lead-contaminated food-contact items. We propose a
-Sentinel Firewall framework that identifies high-risk districts and
-deploys safe-product packages through existing contacts during
-pregnancy, birth and early childhood. We evaluate two packages: a
-Kitchen Package consisting of a lead-safe pot voucher, calcium and safe
-child utensils, and a Kohl Package consisting of safe maternal and
-infant kohl substitutes. The model incorporates district fixed costs,
-the duration and developmental timing of lead reduction from each new
-product, maternal-fetal transfer of lead, and real-world implementation
-losses from imperfect targeting, imperfect health-system fidelity and
-incomplete safe-product use. The analysis is intended as an illustrative
-decision model for settings where one or more hazardous consumer
-products are common, rather than as a universal estimate for all LMICs.
-We use a 10 000-draw probabilistic sensitivity analysis with PERT
-distributions to simulate reductions in maternal and child blood lead,
-child cognitive gains, maternal and neonatal health gains, adult
-cardiovascular health gains and income gains. Both packages generate
-median benefit-cost ratios greater than 4, and the 5th percentile of
-the social benefit-cost ratio remains above parity in both packages.
-The public spreadsheet and Python code allow ministries, NGOs and local
+cosmetics and lead-contaminated food-contact items. We evaluated a
+Sentinel Firewall strategy in which high-risk districts are identified
+through sentinel screening and safer substitute products are delivered
+through maternal and child health contacts.
+
+### Methods
+
+We developed a model-based economic evaluation comparing two
+safe-product packages against current practice without Sentinel
+Firewall-based substitution. The Kitchen Package included a lead-safe
+pot voucher, calcium and safe child utensils. The Kohl Package included
+safe maternal and infant kohl substitutes. From a social perspective,
+the model incorporated district fixed costs, variable programme costs,
+maternal-fetal transfer of lead, developmental timing of lead
+reduction, child cognitive and lifetime earnings gains, maternal and
+neonatal health gains, and adult cardiovascular gains as a secondary
+extension. Intervention costs were modelled in 2026 US dollars, while
+lifetime earnings were valued using a purchasing-power-parity
+productivity anchor equal to GDP per capita multiplied by labour’s
+share of national income. Uncertainty was characterised with 10 000
+Monte Carlo draws using PERT distributions and modest positive
+dependence across key implementation steps.
+
+### Results
+
+In the baseline specification, the Kitchen Package generated a median
+cognition-only benefit-cost ratio of 5.60 (5th-95th percentile 2.00 to
+15.30), and the Kohl Package generated a median cognition-only
+benefit-cost ratio of 5.89 (1.83 to 17.17). Adding maternal and
+neonatal health gains increased the median benefit-cost ratios to 5.82
+for the Kitchen Package and 6.22 for the Kohl Package. Adding adult
+cardiovascular gains increased the median total benefit-cost ratios to
+6.73 and 6.49, respectively. In both packages, the 5th percentile of
+the total social benefit-cost ratio remained above parity.
+
+### Conclusion
+
+Targeted safe-product substitution through maternal and child health
+platforms appears socially cost-effective in hotspot settings where
+hazardous consumer products are common. The model is intended as a
+decision tool rather than as a universal estimate: the public
+spreadsheet and Python code allow ministries, NGOs and local
 researchers to replace the illustrative assumptions with local data.
 These findings support targeted pilot implementation of safe-product
-substitution through maternal and child health systems while stronger
-regulatory and industrial reforms are pursued.
+substitution while stronger regulatory and industrial reforms are
+pursued.
 
 ## Summary box
 
@@ -86,7 +110,7 @@ regulatory and industrial reforms are pursued.
   and local researchers test whether substitution appears cost-effective
   in their own regions before scaling.
 
-# The crisis of informal exposure
+# Introduction
 
 Lead exposure in LMICs increasingly reflects a regulatory mismatch.
 Although the long-term goal should be to remove lead from the global
@@ -169,7 +193,7 @@ contacts are correlated rather than independent. The model therefore
 treats infant kohl delivery as occurring through the union of facility
 delivery or early-immunisation catch-up.
 
-# The Sentinel Firewall framework
+## The Sentinel Firewall framework
 
 We propose a Sentinel Firewall framework in which maternal and child
 health services act as a temporary consumer-protection layer while
@@ -215,7 +239,12 @@ The prevalence parameters for kohl should therefore be interpreted as
 conditional on screened hotspot settings rather than as unconditional
 regional averages.
 
-# Economic model
+## Methods
+
+This report follows the CHEERS 2022 reporting framework for health
+economic evaluations as applied to a model-based policy analysis.38
+
+### Study design, decision problem and comparator
 
 The model asks a simple policy question: if a health system uses
 maternal and child health contacts to replace leaded products with safer
@@ -225,13 +254,14 @@ contributions. First, it demonstrates what follows when plausible LMIC
 values are applied to settings where hazardous cookware, kohl or child
 feeding items are common. Second, it provides a transparent tool that
 local analysts can adapt with their own prevalence, cost, uptake and
-blood-lead data. The purpose is therefore not to estimate one global
-benefit-cost ratio for all LMICs, but to make the assumptions and
-uncertainty structure explicit enough for local decision-making. We
-answer that question by linking each package to changes in blood lead,
-then translating those reductions into child cognitive gains, maternal
-and neonatal health gains, and adult cardiovascular gains (see Figure 1
-for the main cognitive pathway).
+blood-lead data. The comparator is current practice without a Sentinel
+Firewall programme of safe-product substitution. The purpose is
+therefore not to estimate one global benefit-cost ratio for all LMICs,
+but to make the assumptions and uncertainty structure explicit enough
+for local decision-making. We answer that question by linking each
+package to changes in blood lead, then translating those reductions into
+child cognitive gains, maternal and neonatal health gains, and adult
+cardiovascular gains (see Figure 1 for the main cognitive pathway).
 
 ![Figure 1. Two-panel overview of the Sentinel Firewall logic. Panel A shows the core pathway from safe-product substitution to lower maternal and child blood lead, higher child IQ and higher lifetime earnings. Panel B shows the implementation chain that attenuates realized population effects.](../figures_main/figure_1_kitchen_cognition_pathway.png)
 
@@ -240,6 +270,37 @@ for the main cognitive pathway).
 > maternal BLL during pregnancy and lactation, reducing fetal and
 > breastmilk-mediated infant exposure. Safe pots and child utensils can
 > also reduce postnatal exposure once complementary feeding begins.
+
+### Setting, perspective, time horizon and currency
+
+The target setting is a sentinel-identified high-risk district or
+catchment in an LMIC in which one or more hazardous consumer products
+are common. The target population is the mother-child pair reached
+through antenatal care, facility delivery, and early childhood
+immunisation contacts, with secondary adult cardiovascular effects
+allowed for mothers and, in the Kitchen Package, probabilistically
+weighted co-resident grandparents. The primary analysis takes a social
+perspective. Costs are modelled per mother-child pair reached and are
+reported in 2026 US dollars. Earnings are valued from birth over the
+working life, while maternal, neonatal and adult cardiovascular effects
+are discounted to the time of intervention or birth according to the
+relevant pathway.
+
+### Model structure and rationale
+
+We use a probabilistic Monte Carlo model because the intervention is a
+policy package rather than a single biological treatment effect, and the
+key quantities of interest depend on implementation losses, duration of
+protection, developmental timing and multiple uncertain valuation
+parameters. The model has a mother-child pair as its primary analytic
+unit. It follows an implementation chain from targeting and health
+contact through delivery, redemption or receipt, use of the safe
+product, and residual unsafe use. It then maps the resulting maternal
+and child blood lead reductions into child cognition and lifetime
+earnings, maternal and neonatal health gains, and adult cardiovascular
+gains.
+
+### Measurement and valuation of outcomes
 
 The primary economic channel is child cognition. For each simulated
 mother-child pair, we estimate the present value of lifetime earnings
@@ -276,6 +337,8 @@ substantial labour-market friction in subsistence-heavy settings, the
 mode uses the lower end of lead valuation estimates, and the upper
 bound is aligned with developing-country cognitive-skill estimates
 while avoiding higher US-based values.20-23
+
+### Data sources and key assumptions
 
 The model distinguishes direct child lead reductions from prenatal
 reductions mediated through the mother. In the Kitchen Package, the safe
@@ -347,6 +410,8 @@ kohl and 0.12 for infant kohl. These attenuations arise from realistic
 losses at each step of the chain, not from any assumption that the
 products are biologically ineffective once consistently used.
 
+### Costing methods
+
 Costs are tied to actual programme operations. Total programme cost per
 mother-child pair includes a fully loaded share of national and
 district-level overhead, modelled as fixed cost per birth = district
@@ -359,12 +424,15 @@ counselling time, distribution costs, product costs and a programme
 markup. Product and distribution costs fall when attendance or delivery
 fails, but fixed surveillance and setup costs remain.
 
-## Maternal, neonatal and adult cardiovascular channels
+### Broader health consequences
 
-Our primary economic endpoint is the present value of lifetime earnings
-preserved through higher child cognitive ability. That approach is
-transparent, but incomplete. Lead exposure also affects maternal health,
-neonatal outcomes and adult cardiovascular disease.
+The primary outcome for decision-making is the cognition-only
+benefit-cost ratio. We also report a benefit-cost ratio including
+maternal and neonatal health gains and a total benefit-cost ratio that
+further includes adult cardiovascular effects. Our primary economic
+endpoint is therefore the present value of lifetime earnings preserved
+through higher child cognitive ability, but lead exposure also affects
+maternal health, neonatal outcomes and adult cardiovascular disease.
 
 We model maternal and neonatal benefits through reduced pre-eclampsia
 and preterm birth risk. These pathways operate through reductions in
@@ -389,7 +457,7 @@ a value of a statistical life year. Because cardiovascular benefits
 occur later in life, they are discounted according to the assumed age of
 the exposed adult at the time of intervention.34,35
 
-## Probabilistic sensitivity analysis
+### Characterising uncertainty and heterogeneity
 
 Almost all parameters in this model remain uncertain, including
 product-specific blood lead reductions, implementation probabilities,
@@ -413,6 +481,12 @@ checks and figures. Figure 2 compares the Kitchen and Kohl Package BCR
 distributions. Supplementary figures show package-specific BCR
 distributions and tornado diagrams identifying the parameters most
 strongly associated with cognition-only BCRs.
+
+Formal subgroup heterogeneity is limited in the current model. The
+principal sources of heterogeneity are package-specific implementation
+chains, developmental timing, stochastic sex assignment for the
+girls-only infant-kohl robustness check, and probabilistically weighted
+grandparent co-residence in the adult cardiovascular extension.
 
 # Results
 
@@ -813,4 +887,9 @@ Figure A4. Tornado diagram for Kohl Package cognition-only benefit-cost ratio. S
     women: a register-based cohort study from the Autonomous Republic
     of Adjara, Georgia. J Public Health 2026.
     doi:10.1007/s10389-026-02482-x
+38. Husereau D, Drummond M, Augustovski F, et al. Consolidated Health
+    Economic Evaluation Reporting Standards 2022 (CHEERS 2022)
+    statement: updated reporting guidance for health economic
+    evaluations. BMJ 2022;376:e067975.
+    doi:10.1136/bmj-2021-067975
 

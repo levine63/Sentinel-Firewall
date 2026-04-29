@@ -2,14 +2,14 @@
 
 This folder contains the current manuscript, supplementary files, figures, code, and local-adaptation workbook for:
 
-**The Sentinel Firewall: A Health-System Strategy to Decouple Informal Industrialization from Lead Exposure in LMICs**
+**The Sentinel Firewall: a model-based economic evaluation of safe-product substitution to reduce lead exposure in LMICs**
 
 ## Authoritative files
 
 Use these files as the current source of truth:
 
 - Main manuscript source: `main_manuscript/manuscript_bmj_ready_from_word_cleaned.md`
-- Main manuscript Word file: `main_manuscript/manuscript_bmj_ready_from_word_cleaned.docx`
+- Main manuscript Word file: `main_manuscript/manuscript_bmj_ready_research_cheers.docx`
 - Technical appendix: `supplementary_materials/technical_appendix.md`
 - Parameter appendix: `supplementary_materials/parameter_citation_table.md`
 - Public Python model: `public_code_and_data/sentinel_firewall_model.py`
@@ -124,7 +124,7 @@ When syncing the package, the current public copies should always be taken from 
 
 Recommended manuscript file:
 
-- `main_manuscript/manuscript_bmj_ready_from_word_cleaned.docx`
+- `main_manuscript/manuscript_bmj_ready_research_cheers.docx`
 
 Recommended figure uploads:
 

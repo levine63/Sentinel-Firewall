@@ -248,6 +248,11 @@ Total program cost per mother-child pair equals:
 - product costs
 - program markup for wastage, supply-chain overhead, supervision, and health-system administration
 
+Intervention costs are expressed in `2026` US dollars. By contrast, the
+productivity anchor for lifetime earnings is based on PPP GDP per
+capita multiplied by labour's share of national income, as described in
+Section 3.
+
 The district overhead is modeled as:
 
 `fixed_cost_per_birth = district_fixed_cost / district_births`
