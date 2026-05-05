@@ -55,13 +55,13 @@ with `t = 1 ... T`, where `T` depends on labor entry age. This specification pre
 
 The main specification uses a linear approximation from child blood lead reduction to IQ gain, but with an important timing adjustment. The epidemiologic literature links cognition to prenatal, infancy, and early-childhood lead exposure over repeated developmental windows rather than to one brief intervention month. We therefore do not treat a short prenatal or one-year infant reduction as if it changed average childhood lead exposure by the same amount for all formative years.
 
-Instead, the model applies explicit developmental shares that sum to one:
+Instead, the model applies explicit developmental shares of total cognition-relevant harm that sum to one:
 
 - last four months in utero: mode `0.30`
 - year 1: mode `0.30`
 - years 2 to 5 combined: mode `0.40`
 
-The prenatal and year-1 shares are drawn directly, and the residual share for years 2 to 5 is defined as `1 - prenatal - year1`, with rejection sampling to keep it in the target range. Postnatal pathways then receive the year-1 share plus the relevant fraction of the years-2-to-5 share according to how long the intervention lasts. IQ gains are then calculated as:
+The prenatal and year-1 shares are drawn directly, and the residual share for years 2 to 5 is defined as `1 - prenatal - year1`, with rejection sampling to keep it in the target range. Postnatal pathways then receive the year-1 share plus the relevant fraction of the years-2-to-5 share according to how long the intervention lasts. Throughout this section, "share" means share of the total cognition-relevant developmental harm assigned to that age window. IQ gains are then calculated as:
 
 `DeltaIQ = iq_per_bll x DeltaBLL_child_cog_equiv`
 
@@ -92,7 +92,7 @@ The pot pathway is modeled explicitly as a multi-step voucher chain:
 1. household uses an unsafe pot relevant to the pregnant woman or young child
 2. woman attends ANC
 3. voucher is issued
-4. an approved merchant accepting the voucher has stock
+4. an approved merchant accepting the voucher has the safe pot in stock when the voucher is presented
 5. voucher is redeemed
 6. the redeemed pot is used by the pregnant woman or toddler
 7. some residual unsafe pot use may still reduce the benefit
@@ -109,7 +109,7 @@ This formulation reflects the intuition that pot uptake has more operational ste
 
 Behaviorally, the key concern for pots is usually not whether a redeemed pot will ever be used. Safe cookware is a valuable durable good, and once a household has made the effort to redeem a voucher, it is reasonable to expect high use for the pregnant woman or toddler. The larger concern is non-exclusive use: households may continue to use the old unsafe pot alongside the safer replacement, especially for some dishes, some family members, or some cooking contexts. The model therefore places more weight on redemption, merchant stock, and residual unsafe use than on an assumption that the new pot will simply sit unused.
 
-To avoid overstating precision, the model also adds modest positive dependence across ANC attendance, delivery fidelity, voucher issuance, merchant stock, redemption, and targeted use after redemption. This reflects the idea that some districts or facilities will systematically perform better or worse across several links in the chain rather than failing independently at random.
+To avoid overstating precision, the model also adds modest positive dependence across ANC attendance, delivery fidelity, voucher issuance, merchant stock, redemption, and targeted use after redemption. Here delivery fidelity means the probability that the health system actually places the intended product and counselling in the household's hands once the relevant contact occurs, and merchant stock means that the participating retailer has the safe pot physically available when the voucher holder presents. This reflects the idea that some districts or facilities will systematically perform better or worse across several links in the chain rather than failing independently at random.
 
 #### Calcium pathway
 
@@ -149,7 +149,7 @@ Infant kohl:
 
 The infant contact parameter is the probability that an infant can be reached either through facility delivery or through an early immunization contact. The model uses this union directly, rather than adding institutional delivery and immunization coverage as independent events, because these contacts are positively correlated within households and health systems. The modal value is `0.80`, with a range of `0.55` to `0.95`.
 
-The main model applies infant kohl effects to boys and girls. This reflects evidence that kohl may be applied during infancy for perceived protective or ritual reasons, even where use continues longer among girls. The code also retains a `50/50` Bernoulli sex draw for a robustness check in which infant kohl substitution is restricted to mothers and girls only.
+The main model applies infant kohl effects to boys and girls. This reflects evidence that kohl may be applied during infancy for perceived protective or ritual reasons, even where use continues longer among girls. Clinical reports include documented male infants and young boys with lead exposure linked to surma or kohl application, indicating that early-childhood use is not restricted to girls. Shaltout et al. describe pediatric lead poisoning cases in Kuwait that included male infants exposed to surma.37 Parsons et al. likewise describe Pakistani children, including boys, with lead exposure linked to routine surma use in infancy.38 Khalid et al. also include male children in a Pakistani case series of surma-associated lead exposure, again without suggesting that the practice is female-only at young ages.39 These reports are not prevalence studies, but they provide direct clinical evidence that infant boys are among those exposed through kohl. WHO's childhood lead-poisoning review also identifies traditional cosmetics such as kohl and surma as recognized childhood lead sources.40 The code still retains a `50/50` Bernoulli sex draw for a robustness check in which infant kohl substitution is restricted to mothers and girls only.
 
 Adherence to safer kohl is more culturally contingent than adherence to a safe pot. In some households, mothers may welcome a visibly safer substitute if it preserves the protective or ritual meaning of kohl. In other households, older relatives may believe that traditional galena-based kohl is the most protective or authentic option, which could reduce switching or increase continued dual use. The appendix therefore treats kohl adherence as plausible but uncertain, and this uncertainty should be resolved locally wherever possible through formative work and pilot measurement rather than assumed away.
 
@@ -157,13 +157,19 @@ The prevalence parameters for maternal and infant kohl should also be read as co
 
 ## 6. Maternal-Fetal Transfer and Developmental Timing
 
-The model includes an explicit prenatal transfer channel from maternal to fetal exposure.
+The model includes an explicit prenatal transfer channel from maternal to fetal exposure and a separate early-infancy lactational transfer channel for persistent maternal product pathways.
 
 We define:
 
 `DeltaBLL_prenatal_child = fetal_transfer_coeff x DeltaBLL_maternal_pregnancy`
 
-where `fetal_transfer_coeff` represents the fraction of maternal blood lead reduction during pregnancy that translates into reduced fetal exposure. This is an inferred parameter motivated by the strong maternal-cord blood lead relationship in the literature, not a direct estimate of child-IQ-relevant fetal lead transfer.
+where `fetal_transfer_coeff` represents the fraction of maternal blood lead reduction during pregnancy that we treat as translating into reduced fetal exposure. This is an inferred bridge parameter motivated by the well-established fact of placental lead transfer and the broad maternal-cord blood lead relationship in the literature, not a direct estimate of child-IQ-relevant fetal lead transfer. In paired maternal-cord studies, cord blood lead is often a large fraction of concurrent maternal blood lead, commonly on the order of `70%` to `100%` (WHO 2010; Al-Jawadi et al. 2009). This supports the model's modal fetal transfer coefficient of `0.80` as a structural approximation rather than as a directly estimated child-IQ coefficient.
+
+We also define a postnatal maternal-to-infant bridge for the milk-dominated portion of the first year:
+
+`DeltaBLL_lactational_child = lactational_transfer_coeff x DeltaBLL_maternal_postpartum`
+
+where `lactational_transfer_coeff` represents the fraction of maternal blood lead reduction that we treat as reaching the breastfed infant after birth. This is again a structural bridge parameter rather than a directly estimated coefficient. It is motivated by evidence that maternal blood lead predicts breast-milk lead and infant exposure, but the literature does not provide a single transportable effect size for brief public-health interventions.
 
 In the Kitchen Package:
 
@@ -173,13 +179,31 @@ In the Kohl Package:
 
 `DeltaBLL_prenatal_child = fetal_transfer_coeff x DeltaBLL_maternal_kohl_mother`
 
+For the postnatal maternal-to-infant pathway, the model applies:
+
+- `DeltaBLL_lactational_child = lactational_transfer_coeff x DeltaBLL_pot_mother` in the Kitchen Package
+- `DeltaBLL_lactational_child = lactational_transfer_coeff x DeltaBLL_maternal_kohl_mother` in the Kohl Package
+
+This lactational channel is capped at the first year of life and contributes only to the year-1 developmental share. In the current model, the `0-6 months` period is handled asymmetrically across interventions. For the safe pot, there is no direct child pot pathway before complementary feeding begins; the only child benefit in that window is the maternal-to-infant lactational bridge from continued maternal pot use. For kohl, there are two distinct pathways in early infancy: continued safe maternal kohl can lower infant exposure through the maternal lactational bridge, while safe infant kohl substitution lowers infant exposure directly from birth. Direct child pot and utensil pathways are treated as beginning with complementary feeding rather than at birth, so they cover only the latter half of year 1 before continuing into later childhood if the safer products remain in use. Calcium is not included in this postnatal pathway because the current specification treats calcium as a pregnancy-timed intervention rather than as a persistent postpartum exposure reduction.
+
 For child cognition, this prenatal reduction receives the prenatal developmental share rather than being spread mechanically over all early-childhood years.
 
 The total child cognitive exposure reduction is then calculated as a weighted combination of:
 
 - the prenatal pathway, using the last-four-months-in-utero share
+- the postnatal maternal-to-infant pathway during the milk-dominated part of year 1
 - postnatal pathways operating in year 1
 - postnatal pathways operating in years 2 to 5
+
+Table A1 summarizes that timing logic by intervention component.
+
+| Intervention component | Pregnancy | 0-6 months | Complementary feeding onward | Main modeled child pathway |
+| --- | --- | --- | --- | --- |
+| Safe pot substitution | lowers maternal BLL -> lower fetal BLL | modeled only through continued maternal pot use -> lower infant BLL via lactational transfer; no direct child pot effect before complementary feeding | lowers child BLL through safer food preparation | prenatal transfer, lactational transfer, and direct child pathway |
+| Calcium supplementation | lowers maternal BLL -> lower fetal BLL | not modeled | not modeled | prenatal transfer only |
+| Safe feeding utensils | not modeled | not modeled | lowers child BLL directly once complementary feeding begins | direct child pathway |
+| Safe maternal kohl substitution | lowers maternal BLL -> lower fetal BLL | if continued, lowers maternal BLL -> lower infant BLL via lactational transfer | not the primary pathway in the model | prenatal transfer and lactational transfer |
+| Safe infant kohl substitution | not modeled | lowers infant BLL directly from birth | may continue if local practice continues | direct child pathway |
 
 In the kitchen package, `bll_pot_child` is defined as the postnatal child effect of switching cookware. Any prenatal child benefit from lower maternal lead due to the pot is modeled separately through `bll_pot_mother` and `fetal_transfer_coeff`. This avoids double counting the pot effect across prenatal and postnatal child pathways.
 
@@ -190,7 +214,7 @@ We include two additional maternal and neonatal pathways:
 - preeclampsia
 - preterm birth
 
-These are modeled using baseline prevalence and a per-`1 ug/dL` odds ratio. For each outcome:
+These are modeled using baseline prevalence and an approximately per-`1 ug/dL` odds ratio. For each outcome:
 
 1. convert baseline prevalence to baseline odds
 2. reduce odds according to the modeled maternal lead reduction
@@ -207,14 +231,14 @@ In notation:
 
 `Deltarisk = risk_0 - risk_1`
 
-The model does not assume that the full maternal BLL reduction applies across the entire pregnancy. Instead, maternal lead reductions are multiplied by timing parameters before being entered into the preeclampsia and preterm equations. For preeclampsia, this reflects the fact that the clinical risk window is mainly after `20` weeks, so an intervention beginning around month `4` may still cover much of the relevant period. For preterm birth, the literature supports an in-pregnancy effect but is less clear about the exact trimester weighting. We therefore use:
+The model does not assume that the full maternal BLL reduction applies across the entire pregnancy. Instead, maternal lead reductions are multiplied by timing parameters before being entered into the preeclampsia and preterm equations. For preeclampsia, Poropat et al. report a meta-analytic increase of about `1.6%` in preeclampsia odds per `1 ug/dL` increase in blood lead, which is close to the mode used here. For preterm birth, the literature supports an in-pregnancy effect but is less clear about the exact dose metric and trimester weighting. The Habibian meta-analysis is strongest as a highest-versus-lowest exposure synthesis rather than as a clean single-slope `1 ug/dL` estimate, and related prenatal lead evidence such as Vigeh et al. points to broader adverse birth outcomes without pinning down a single transportable slope. The `1.02-1.03` range in this model should therefore be read as a linearized calibration consistent with that broader literature rather than as a directly reported coefficient. We therefore use:
 
 - `preeclampsia_timing_mult = 0.50 / 0.75 / 1.00`
 - `preterm_timing_mult = 0.40 / 0.70 / 1.00`
 
 These are structural timing parameters rather than direct epidemiologic estimates.
 
-Maternal and neonatal health benefits are monetized using reduced-form DALY equivalents:
+Maternal and neonatal health benefits are monetized using reduced-form disability-adjusted life year (DALY) equivalents:
 
 - preeclampsia cases averted x `preeclampsia_daly_wt`
 - preterm cases averted x `neonatal_daly_mult`
@@ -226,6 +250,12 @@ This is intentionally simple and should be read as a tractable first-pass valuat
 The model includes a supplemental adult cardiovascular disease (CVD) pathway. We treat this as a secondary extension rather than part of the core child-cognition case because the parameterization is more aggregated and less directly identified than the child earnings pathway. Benefits are valued as:
 
 `Benefit_CVD = DeltaBLL_effective x cvd_daly_per_ug_lifetime x duration x VSLY x discount_factor`
+
+where `VSLY` denotes the value of a statistical life year and `cvd_daly_per_ug_lifetime` denotes lifetime adult cardiovascular disease DALYs per `1 ug/dL` sustained lead reduction.
+
+The key caution is that `cvd_daly_per_ug_lifetime` is anchored in a single global health-impact and economic-modeling study of lifetime lead exposure, namely Larsen and Sanchez-Triana (2023), whereas the interventions in this paper usually last only a few months or years. The model therefore scales the implied adult cardiovascular burden by intervention duration as a share of the exposed adult's lifetime rather than assuming a full-lifetime exposure change. This is an intentionally simple bridge between a lifetime-oriented burden parameter and a shorter-duration intervention.
+
+That bridge can bias in either direction. It may be optimistic if short-term reductions in blood lead do not translate into meaningful reductions in later cardiovascular disease risk. But it may be pessimistic if a temporary public-health intervention causes some households to keep using the safer product after the formal program period ends, thereby extending the true exposure reduction beyond the modeled duration.
 
 In the Kitchen Package:
 
@@ -257,7 +287,7 @@ The district overhead is modeled as:
 
 `fixed_cost_per_birth = district_fixed_cost / district_births`
 
-The fixed-cost numerator should be interpreted as fully loaded national and district overhead for sentinel screening and program setup, including XRF assets, training, supervision, coordination, and market-screening capacity. The modal denominator, `20,000` births, is an effective screening-unit cohort rather than a claim that every administrative district has exactly that many births. It reflects a shared-service model in which XRF equipment and specialized supervision can serve multiple smaller districts or catchments, improving capital efficiency.
+The fixed-cost numerator should be interpreted as fully loaded national and district overhead for sentinel screening and program setup, including X-ray fluorescence (XRF) assets, training, supervision, coordination, and market-screening capacity. The modal denominator, `20,000` births, is an effective annual screening-unit birth cohort rather than a claim that every administrative district has exactly that many births. It reflects a shared-service model in which XRF equipment and specialized supervision can serve multiple smaller districts or catchments, improving capital efficiency.
 
 The model treats demographic survival parameters (`p18` and `p65`) and lead-source prevalence parameters (`prev_pot`, `prev_kohl_maternal`, `prev_kohl_infant`, and `prev_utensils`) as independent. Survival affects the present value of future earnings. Product-specific lead prevalence reflects local contamination from informal consumer-product supply chains. The model therefore does not assume that higher childhood mortality mechanically predicts higher or lower prevalence of contaminated pots, kohl, or utensils.
 
@@ -281,9 +311,9 @@ The code also writes compressed trial-level outputs, a small validation table, a
 
 ## 11. Parameters
 
-Table A1 (companion file) reports the final parameter values used in the code. The working parameter file and citation-complete parameter table will be made available with the public model files described in the manuscript Data availability statement.
+The companion parameter table reports the final parameter values used in the code. The working parameter file and citation-complete parameter table will be made available with the public model files described in the manuscript Data availability statement.
 
-The citation-complete version of Table A1 is the companion file `parameter_citation_table.md`. For each parameter, that file provides either a direct citation, a cited synthesis basis, or an explicit program-design justification when the literature does not yield a single transportable estimate.
+The citation-complete version of that parameter table is the companion file `parameter_citation_table.md`. For each parameter, that file provides either a direct citation, a cited synthesis basis, or an explicit program-design justification when the literature does not yield a single transportable estimate.
 
 The parameters fall into six groups:
 
@@ -300,7 +330,7 @@ The parameters fall into six groups:
 
 The pot-to-BLL parameter is one of the most influential quantities in the model and also one of the least directly identified. The underlying literature is strong on contamination, leaching, and plausibility of exposure, but much weaker on the exact blood lead decline that would follow a clean product swap in a routine public-health program. For that reason, the parameter is intentionally kept broad at `2 / 5 / 8 ug/dL` for the postnatal child effect among households that switch fully from hazardous cookware to the safe replacement for the target child. The lower end allows for settings in which cookware is only one contributor among several lead sources. The upper end is reserved for settings where contaminated cookware or pottery is a dominant exposure source and the safer replacement sharply reduces exposure.
 
-Three strands of evidence support that wide but nontrivial range. First, studies from Mexico show that lead-glazed ceramic foodware is strongly associated with elevated child BLL, including large differences in the prevalence of BLLs above `5 ug/dL` between frequent users and non-users (Rojas-Lopez et al., 1994; Romieu et al., 1994; Pure Earth/INSP summaries). Second, studies from Cameroon, Afghanistan, and other settings show that artisanal aluminum cookware can contain and leach substantial lead, in some cases at levels far above health-based thresholds (Weidenhamer et al., 2014; Weidenhamer et al., 2022; Fellows, Samy, and Whittaker, 2025). Third, because the main available studies document contamination, user-non-user contrasts, and exposure plausibility rather than randomized product replacement with child BLL follow-up, we treat the parameter as a synthesis assumption anchored in the literature rather than as a directly estimated treatment effect.
+Three strands of evidence support that wide but nontrivial range. First, studies from Mexico show that lead-glazed ceramic foodware is strongly associated with elevated child BLL, including large differences in the prevalence of BLLs above `5 ug/dL` between frequent users and non-users (Rojas-Lopez et al., 1994; Romieu et al., 1994; Pure Earth/INSP summaries). Second, studies from Cameroon, Afghanistan, and other settings show that artisanal aluminum cookware can contain and leach substantial lead, in some cases at levels far above health-based thresholds (Weidenhamer et al., 2014; Weidenhamer et al., 2023; Fellows, Samy, and Whittaker, 2025). Third, because the main available studies document contamination, user-non-user contrasts, and exposure plausibility rather than randomized product replacement with child BLL follow-up, we treat the parameter as a synthesis assumption anchored in the literature rather than as a directly estimated treatment effect.
 
 The implementation logic is also important. For cookware, the main behavioral uncertainty is usually not whether a redeemed safe pot will ever be used. A new durable pot is attractive and useful, so conditional use after redemption may be high. The larger concern is non-exclusive use: households may continue using the old unsafe pot for some dishes, some family members, or some occasions. The parameter therefore belongs together with the redemption and residual-use parameters rather than being read as a stand-alone biological constant.
 
@@ -308,7 +338,7 @@ The implementation logic is also important. For cookware, the main behavioral un
 
 The baseline model uses a linear `iq_per_bll` parameter for transparency, but the supporting literature is nonlinear. Canfield, Lanphear, Jusko, and Schnaas all point in the same direction: there is no clear safe threshold, and the marginal cognitive loss per unit of blood lead is larger at lower BLLs than at higher ones. The linear range of `0.20` to `0.60` IQ points per `1 ug/dL` reduction in developmentally averaged child BLL, with a mode of `0.35`, should therefore be understood as a practical approximation to a low-level nonlinear relationship rather than as a literal claim that every `1 ug/dL` reduction has the same cognitive value at every starting point.
 
-To make that point concrete, we also report a nonlinear robustness exercise based on a log-BLL formulation. Under a Crump-style parameterization with `beta = 3.246`, lowering BLL from `12` to `7 ug/dL` yields an IQ gain of roughly `1.58` points, whereas lowering BLL from `7` to `2 ug/dL` yields about `3.18` points. This is exactly the intuition the main text highlights: the same absolute decline in BLL is worth more when it occurs at lower exposure levels or when the targeted source accounts for a larger share of total exposure. The linear main model is therefore easier to read, but the nonlinear robustness check is more faithful to the shape of the epidemiologic literature.
+To make that point concrete, we also report a nonlinear robustness exercise based on a log-BLL formulation. Under a Crump-style parameterization with `beta = 3.246`, lowering BLL from `12` to `7 ug/dL` yields an IQ gain of roughly `1.58` points, whereas lowering BLL from `7` to `2 ug/dL` yields about `3.18` points. Holding package mechanics at modal values, a lower-background setting with other-source BLL centered at roughly `3 ug/dL` (SD `1.5`) yields median nonlinear IQ gains of about `0.51` for the Kitchen Package and `0.30` for the Kohl Package, with corresponding median cognition-channel BCRs of about `10.33` and `14.31`. A higher-background setting with other-source BLL centered at roughly `7 ug/dL` (SD `3.5`) lowers those median nonlinear IQ gains to about `0.27` and `0.16`, and the corresponding median cognition-channel BCRs to about `5.50` and `7.47`, respectively. The linear main model is therefore easier to read, but the nonlinear robustness check is more faithful to the shape of the epidemiologic literature and makes clear that the same source-specific intervention is worth more when it removes a larger share of total exposure.
 
 ### 12.3 IQ to earnings
 
@@ -316,11 +346,61 @@ The IQ-to-earnings mapping is the third key multiplier. Here the literature is b
 
 We therefore use `0.003 / 0.005 / 0.010` as the minimum, mode, and maximum. This range avoids the high-income bias that would come from using US-based estimates such as `1.5%` to `2.5%` per IQ point as the main LMIC specification. The parameter remains intentionally bounded below the highest values in the broader literature because many LMIC labor markets may not fully monetize cognitive gains through formal wages.
 
+### 12.4 Multi-parameter downside scenarios
+
+To test whether the model's favorable baseline results depend on several optimistic assumptions moving in the same direction, we ran two deliberately adverse multi-parameter scenarios in which related assumptions shift together.
+
+#### Disadvantaged implementation setting
+
+The first scenario is intended to represent a very poor setting with weak public-health delivery capacity. We reduce the minimum, modal, and maximum values of the following macroeconomic and implementation parameters by `30%`:
+
+- `gdp_ppp_per_capita`
+- `growth`
+- `p_att_anc`
+- `fidelity`
+- `p_merchant_stock`
+- `p_redeem`
+- `adherence`
+
+All biological effect-size parameters are left unchanged. This preserves the interpretation that the scenario reflects weaker household resources and weaker implementation rather than a different biology of lead exposure.
+
+Under this scenario, the median total BCR falls from `5.69` to `2.28` for the Kitchen Package and from `6.82` to `2.15` for the Kohl Package. The `5th-95th` percentile range is `0.87-5.89` for Kitchen and `0.69-6.08` for Kohl, and the share of total-BCR draws below parity rises to `7.86%` for Kitchen and `13.74%` for Kohl. These declines are large, but they do not eliminate the median social case.
+
+#### Halved cookware and kohl effect-size scenario
+
+The second scenario asks how sensitive the findings are to the assumed magnitude of the product-specific blood lead reductions outside calcium. We reduce the following BLL-effect parameters by `50%`:
+
+- `bll_pot_child`
+- `bll_pot_mother`
+- `bll_mug_child`
+- `bll_maternal_kohl_mother`
+- `bll_infant_kohl_child`
+
+The calcium parameter `bll_calc_mother` is left unchanged because it is the most directly trial-anchored product-specific effect in the model.
+
+Under this scenario, the median total BCR falls from `5.69` to `2.98` for the Kitchen Package and from `6.82` to `3.41` for the Kohl Package. The `5th-95th` percentile range is `1.18-7.63` for Kitchen and `1.12-9.46` for Kohl, and the share of total-BCR draws below parity rises to `2.47%` for Kitchen and `3.59%` for Kohl. This check suggests that the baseline is meaningfully but not overwhelmingly dependent on the more uncertain cookware and kohl effect-size assumptions.
+
+Table A2 summarizes the distributional results for the main robustness checks. For the nonlinear background checks, the table reports cognition-channel BCRs. For the adult-spillover, downside, and girls-only checks, it reports total BCRs.
+
+| Check | Pkg | BCR | Median | P5-P95 | Share below parity |
+| --- | --- | --- | --- | --- | --- |
+| Adult spillover (+1 adult in half of recipient households) | Kitchen | Total | `5.89` | `2.32-15.03` | `0.08%` |
+| Adult spillover (+1 adult in half of recipient households) | Kohl | Total | `6.97` | `2.30-19.25` | `0.28%` |
+| Low-background nonlinear BLL (`other-source mean 3`, `SD 1.5`) | Kitchen | Cognition | `10.33` | `3.33-29.25` | `0.01%` |
+| Low-background nonlinear BLL (`other-source mean 3`, `SD 1.5`) | Kohl | Cognition | `14.31` | `4.21-44.75` | `0.03%` |
+| High-background nonlinear BLL (`other-source mean 7`, `SD 3.5`) | Kitchen | Cognition | `5.50` | `1.64-16.77` | `0.96%` |
+| High-background nonlinear BLL (`other-source mean 7`, `SD 3.5`) | Kohl | Cognition | `7.47` | `2.06-25.27` | `0.53%` |
+| Disadvantaged implementation setting | Kitchen | Total | `2.28` | `0.87-5.89` | `7.86%` |
+| Disadvantaged implementation setting | Kohl | Total | `2.15` | `0.69-6.08` | `13.74%` |
+| Half cookware and kohl effect sizes | Kitchen | Total | `2.98` | `1.18-7.63` | `2.47%` |
+| Half cookware and kohl effect sizes | Kohl | Total | `3.41` | `1.12-9.46` | `3.59%` |
+| Infant kohl substitution restricted to girls | Kohl | Total | `4.63` | `1.15-15.68` | `3.57%` |
+
 ## 13. Test-Triggered Provision versus Sentinel-Area Universal Provision
 
 Experience in Adjara, Georgia illustrates that ANC systems can support
 universal biomonitoring with follow-up for women found to have elevated
-blood lead levels.36 37 The Sentinel Firewall instead emphasizes
+blood lead levels.36 The Sentinel Firewall instead emphasizes
 universal provision of safe substitutes to the relevant target group
 within sentinel-identified high-risk areas. The trade-off can be
 summarized with a simple comparison.
@@ -489,8 +569,12 @@ The most important are:
     exposure for women and children. UNICEF Georgia 2024. Available:
     https://www.unicef.org/georgia/evidence-and-sustained-leadership-help-reduce-lead-exposure-women-and-children
     [Accessed 29 Apr 2026].
-37. Ugreshelidze D, Khachidze N, Chakhnashvili N, et al. Association
-    between blood lead levels, haemoglobin and anaemia in pregnant
-    women: a register-based cohort study from the Autonomous Republic
-    of Adjara, Georgia. J Public Health 2026.
-    doi:10.1007/s10389-026-02482-x
+37. Shaltout A, Yaish SA, Fernando N. Lead poisoning in children from
+    surma. Ann Trop Paediatr 1981;1(4):209-16.
+38. Parsons PJ, Reilly AA, Hussain A. Childhood lead exposure from
+    traditional cosmetics. Lancet 1997;349(9058):1096.
+39. Khalid N, Ahmad SA, Toaimah FH, et al. Surma and lead poisoning: a
+    cross-sectional study of children in Pakistan. J Pak Med Assoc
+    2010;60(9):759-63.
+40. World Health Organization. Childhood lead poisoning. Geneva: WHO,
+    2010. Available: https://www.who.int/publications/i/item/childhood-lead-poisoning

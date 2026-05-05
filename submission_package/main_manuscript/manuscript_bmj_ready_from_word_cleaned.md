@@ -44,13 +44,13 @@ dependence across key implementation steps.
 ### Results
 
 In the baseline specification, the Kitchen Package generated a median
-cognition-only benefit-cost ratio of 5.60 (5th-95th percentile 2.00 to
-15.30), and the Kohl Package generated a median cognition-only
-benefit-cost ratio of 5.89 (1.83 to 17.17). Adding maternal and
-neonatal health gains increased the median benefit-cost ratios to 5.82
-for the Kitchen Package and 6.22 for the Kohl Package. Adding adult
+cognition-only benefit-cost ratio of 4.61 (5th-95th percentile 1.65 to
+12.79), and the Kohl Package generated a median cognition-only
+benefit-cost ratio of 6.24 (1.96 to 17.98). Adding maternal and
+neonatal health gains increased the median benefit-cost ratios to 4.80
+for the Kitchen Package and 6.55 for the Kohl Package. Adding adult
 cardiovascular gains increased the median total benefit-cost ratios to
-6.73 and 6.49, respectively. In both packages, the 5th percentile of
+5.69 and 6.82, respectively. In both packages, the 5th percentile of
 the total social benefit-cost ratio remained above parity.
 
 ### Conclusion
@@ -159,7 +159,9 @@ cookware in Cameroon and other settings show that lead can leach from
 artisanal aluminium pots at levels capable of producing substantial
 dietary exposure.4,5 Second, lead-contaminated cups, mugs, bowls and
 spoons can increase chronic ingestion among infants and toddlers once
-complementary feeding begins. The parameterisation in this paper treats
+complementary feeding begins (that is, when foods and liquids are
+introduced in addition to breast milk). The parameterisation in this
+paper treats
 this pathway as plausible but less directly measured than the cookware
 pathway, drawing on the broader literature on lead-contaminated foodware
 and lead-glazed ceramics.3,6 Third, traditional eye cosmetics such as
@@ -242,7 +244,11 @@ regional averages.
 ## Methods
 
 This report follows the CHEERS 2022 reporting framework for health
-economic evaluations as applied to a model-based policy analysis.38
+economic evaluations as applied to a model-based policy analysis.37
+No prespecified health economic analysis plan was registered; the model
+structure, parameter ranges and reporting choices were developed
+iteratively from the literature and then documented in the public code,
+spreadsheet and appendices.
 
 ### Study design, decision problem and comparator
 
@@ -266,7 +272,7 @@ cardiovascular gains (see Figure 1 for the main cognitive pathway).
 ![Figure 1. Two-panel overview of the Sentinel Firewall logic. Panel A shows the core pathway from safe-product substitution to lower maternal and child blood lead, higher child IQ and higher lifetime earnings. Panel B shows the implementation chain that attenuates realized population effects.](../figures_main/figure_1_kitchen_cognition_pathway.png)
 
 > Note: IQ gains depend on the size, duration and developmental timing
-> of fetal and child BLL reductions. Safe pots and calcium can lower
+> of fetal and child blood lead level (BLL) reductions. Safe pots and calcium can lower
 > maternal BLL during pregnancy and lactation, reducing fetal and
 > breastmilk-mediated infant exposure. Safe pots and child utensils can
 > also reduce postnatal exposure once complementary feeding begins.
@@ -284,7 +290,10 @@ perspective. Costs are modelled per mother-child pair reached and are
 reported in 2026 US dollars. Earnings are valued from birth over the
 working life, while maternal, neonatal and adult cardiovascular effects
 are discounted to the time of intervention or birth according to the
-relevant pathway.
+relevant pathway. Intervention-cost inputs are expressed directly in
+2026 US dollars. Lifetime productivity is valued separately using the
+PPP GDP anchor described below rather than by converting wages from
+another currency-year dataset.
 
 ### Model structure and rationale
 
@@ -304,10 +313,12 @@ gains.
 
 The primary economic channel is child cognition. For each simulated
 mother-child pair, we estimate the present value of lifetime earnings
-from birth using a market-labour productivity anchor equal to PPP GDP
-per capita multiplied by labour's share of national income, combined
-with survival to adulthood and the end of working life, expected real
-income growth and a social discount rate. This follows the social
+from birth using a market-labour productivity anchor equal to
+purchasing-power-parity (PPP) GDP per capita multiplied by labour's
+share of national income, combined with survival to adulthood and the
+end of working life, expected real income growth and a social discount
+rate, that is, the rate used to convert future benefits into
+present-value terms. This follows the social
 benefit-cost tradition of valuing cognitive gains at their marginal
 product rather than at observed wage rates, which would miss
 own-account and informal production that remain important in the
@@ -331,8 +342,11 @@ additional check that lead exposure is meaningfully associated with
 lower learning outcomes in developing-country settings.19
 
 We map IQ gains into lifetime earnings using an LMIC-centred return of
-0.0030-0.0100 per IQ point, with a mode of 0.0050. This range is
-intended to be policy-conservative: the lower bound allows for
+0.0030-0.0100 lifetime-earnings units per unit of baseline lifetime
+earnings for each IQ point gained, with a mode of 0.0050. In other
+words, the mode assumes that one additional IQ point raises discounted
+lifetime earnings by about 0.5%. This range is intended to be
+policy-conservative: the lower bound allows for
 substantial labour-market friction in subsistence-heavy settings, the
 mode uses the lower end of lead valuation estimates, and the upper
 bound is aligned with developing-country cognitive-skill estimates
@@ -340,33 +354,53 @@ while avoiding higher US-based values.20-23
 
 ### Data sources and key assumptions
 
-The model distinguishes direct child lead reductions from prenatal
-reductions mediated through the mother. In the Kitchen Package, the safe
-pot and safe utensils reduce direct child exposure, while the safe pot
-and calcium reduce maternal blood lead during pregnancy. In the Kohl
-Package, maternal kohl affects prenatal exposure and infant kohl affects
-direct child exposure after birth. To reflect placental transfer,
-maternal blood lead reductions during pregnancy are converted into fetal
-lead reductions using a fetal-transfer parameter with a mode of 0.80.
+The model distinguishes direct child lead reductions from maternal
+pathways. In the Kitchen Package, the safe pot and safe utensils reduce
+direct child exposure, while the safe pot and calcium reduce maternal
+blood lead during pregnancy; persistent maternal pot use can also reduce
+infant exposure during the milk-dominated part of the first year. In the
+Kohl Package, maternal kohl affects prenatal exposure and can also lower
+early-infancy exposure through the same maternal pathway, while infant
+kohl affects direct child exposure after birth. To reflect placental
+transfer, maternal blood lead reductions during pregnancy are converted
+into fetal lead reductions using a fetal-transfer parameter with a mode
+of 0.80.
 The parameter is motivated by the strong relationship between maternal
-and cord blood lead and by evidence that reducing maternal blood lead
-during pregnancy can lower fetal exposure.2,8,24,25
+and cord blood lead reported across paired-sample studies and by
+evidence that reducing maternal blood lead during pregnancy can lower
+fetal exposure.2,8,24 In paired maternal-cord studies, cord blood lead
+is often a large fraction of concurrent maternal blood lead, commonly on
+the order of 70%-100%, which supports the model's modal fetal transfer
+coefficient of 0.80 as a structural approximation rather than as a
+directly estimated child-IQ coefficient.2,24
 
 The cognition model does not treat a short prenatal or one-year infant
 intervention as if it reduced average blood lead by the same amount
 across all formative years. Instead, it assigns explicit developmental
-shares that sum to one: 20%-40% of cognitive harm in the last four
+shares of total cognition-relevant harm that sum to one: 20%-40% of cognitive harm in the last four
 months in utero, with a mode of 30%; 20%-40% in year 1, with a mode of
 30%; and the remaining 30%-60% in years 2-5, with a mode of 40%. This
 timing adjustment is motivated by evidence linking cognition to
-prenatal, infancy and repeated early-childhood exposure histories rather
+prenatal exposure, exposure during infancy, and repeated
+early-childhood exposure histories rather
 than to a single brief exposure interval.17,18,26
+
+Within that structure, direct child cookware and utensil pathways begin
+with complementary feeding rather than at birth, whereas persistent
+maternal pot use or maternal kohl use can also lower infant exposure
+during the milk-dominated part of the first year. Thus, in the current
+model, the safe-pot pathway affects the child during `0-6` months only
+through the maternal lactational channel, while the kohl package has
+both a maternal lactational channel and a separate direct infant-kohl
+channel in that same window. Appendix Table A1 and Appendix Figure A5
+summarize these timing windows by intervention component.
 
 The most influential biological efficacy inputs are deliberately
 assigned wide ranges when the literature is indirect. Among households
 that use hazardous cookware and then switch fully to the safe pot for
 food consumed by the pregnant woman or young child, the postnatal child
-BLL reduction is modelled as 2-8 ug/dL, with a mode of 5. A full
+blood lead level (BLL) reduction is modelled as 2-8 ug/dL, with a mode
+of 5. A full
 switch means that the household starts with the unsafe product, receives
 or redeems the safer substitute, and uses the safe product for the
 target user without enough continued unsafe-product use to preserve the
@@ -374,16 +408,22 @@ original exposure pathway. The cookware child parameter is defined as
 the postnatal child effect only; any prenatal child benefit from lower
 maternal lead is modelled separately through the maternal pot pathway
 and fetal transfer. The calcium parameter is anchored more tightly
-because it is informed by a randomised trial in pregnancy: 0.5-2 ug/dL,
-with a mode of 1.2.8
+because it is informed by a randomised trial in pregnancy: 0.2-1.2 ug/dL,
+with a mode of 0.4, which is close to the full-sample average reduction
+reported by Ettinger et al. The upper tail allows for larger effects in
+women with higher compliance or higher bone-lead burden, but the central
+value is now aligned to the trial-wide intent-to-treat result rather
+than to a subgroup effect.8
 
 We model multiple imperfections in implementation. For calcium, maternal
 kohl, infant kohl and child utensils, realised benefit depends on
 baseline use of the hazardous product where relevant, attendance at the
-relevant health contact, fidelity of the health system in delivering
-both the safe product and counselling, and sustained use. For the pot,
+relevant health contact, fidelity of the health system in actually
+delivering both the safe product and the intended counselling once that
+contact occurs, and sustained use. For the pot,
 we model a longer voucher chain in which the health care system must
-issue the voucher, a participating merchant must have stock, the woman
+issue the voucher, a participating merchant must have the safe pot in
+stock when the voucher is presented, the woman
 must redeem the voucher and the new pot (but not the old) must then be
 used for food consumed by the pregnant woman or toddler. Conditional on
 redeeming a voucher for a valuable durable good, use by the pregnant
@@ -404,7 +444,10 @@ Multiplying modal values for targeting, health-care contact, delivery
 fidelity, household adherence, voucher redemption and residual unsafe
 use gives a simple sense of the implementation attenuation we assume.
 The modal assumptions imply that only a small share of the full-switcher
-biological benefit is realised at the population level: approximately
+biological benefit is realised at the population level after baseline
+hazard prevalence, contact coverage, product delivery, merchant stock
+availability, redemption and adherence are all taken into account:
+approximately
 0.20 for the pot pathway, 0.14 for child utensils, 0.15 for maternal
 kohl and 0.12 for infant kohl. These attenuations arise from realistic
 losses at each step of the chain, not from any assumption that the
@@ -414,12 +457,14 @@ products are biologically ineffective once consistently used.
 
 Costs are tied to actual programme operations. Total programme cost per
 mother-child pair includes a fully loaded share of national and
-district-level overhead, modelled as fixed cost per birth = district
-fixed cost/district births. We use a modal effective birth cohort of 20
-000 per screening unit, reflecting a shared-service model in which X-ray
-fluorescence equipment, training, supervision and market-screening
-capacity can be used across multiple smaller districts rather than
-purchased separately by each district. Variable costs include
+district-level fixed programme overhead and setup cost, modelled as
+fixed cost per birth = district fixed cost/annual births in the
+screening unit. We use a modal effective birth cohort of 20 000 births
+per screening unit. This reflects a shared-service model in
+which one screening unit's X-ray fluorescence equipment, training,
+supervision and market-screening capacity can be spread across multiple
+smaller districts rather than purchased separately by each district.
+Variable costs include
 counselling time, distribution costs, product costs and a programme
 markup. Product and distribution costs fall when attendance or delivery
 fails, but fixed surveillance and setup costs remain.
@@ -439,7 +484,11 @@ and preterm birth risk. These pathways operate through reductions in
 maternal blood lead during pregnancy. The model starts with baseline
 prevalence values for pre-eclampsia and preterm birth and applies odds
 ratios per 1 ug/dL lead increase to estimate how much those risks fall
-when maternal blood lead is reduced. Because the intervention begins
+when maternal blood lead is reduced. The pre-eclampsia dose-response is
+closer to a directly reported per-ug/dL estimate than the preterm
+relationship, for which the literature is broader and includes
+meta-analytic birth-outcome evidence beyond a single transportable
+slope.25 Because the intervention begins
 during pregnancy rather than before conception, the model scales
 maternal BLL reduction by timing multipliers before applying the
 pre-eclampsia and preterm equations. The resulting risk changes are
@@ -455,7 +504,18 @@ these gains using a DALY-based approach that combines an assumed
 lifetime cardiovascular burden per sustained 1 ug/dL lead reduction with
 a value of a statistical life year. Because cardiovascular benefits
 occur later in life, they are discounted according to the assumed age of
-the exposed adult at the time of intervention.34,35
+the exposed adult at the time of intervention.34,35 This cardiovascular
+term should be read cautiously. The Larsen and Sanchez-Triana study is a
+single global health-impact and economic-modeling analysis anchored in
+lifetime lead exposure,
+whereas our interventions last only a few months or years. We therefore
+scale the implied lifetime cardiovascular burden by the duration of the
+modeled exposure reduction as a share of the adult's lifetime. That may
+be optimistic if short-term interventions do not meaningfully change
+long-run cardiovascular risk. But it may also be pessimistic if some
+households continue the safer behavior after the formal intervention
+ends, so that the true exposure reduction lasts longer than the modeled
+program duration.
 
 ### Characterising uncertainty and heterogeneity
 
@@ -472,31 +532,38 @@ have a preferred central estimate, but we do not observe a full
 empirical sampling distribution for the policy context being modelled.
 The simulation also includes modest positive dependence across several
 implementation steps. In practice, attendance, product delivery, voucher
-issuance, merchant stock, redemption and post-redemption use are
+issuance, merchant stock availability at the participating retailer,
+redemption and post-redemption use are
 unlikely to fail independently. Some districts or facilities will
 perform better across several links, while others will perform worse.
 
 The Python code exports trial-level data, summary tables, validation
-checks and figures. Figure 2 compares the Kitchen and Kohl Package BCR
-distributions. Supplementary figures show package-specific BCR
-distributions and tornado diagrams identifying the parameters most
-strongly associated with cognition-only BCRs.
+checks and figures. Figure 2 compares the Kitchen and Kohl Package
+distributions of benefit-cost ratios (BCRs). Supplementary figures in
+the online appendix show package-specific BCR distributions and tornado
+diagrams identifying the parameters most strongly associated with
+cognition-only BCRs.
 
 Formal subgroup heterogeneity is limited in the current model. The
 principal sources of heterogeneity are package-specific implementation
 chains, developmental timing, stochastic sex assignment for the
 girls-only infant-kohl robustness check, and probabilistically weighted
-grandparent co-residence in the adult cardiovascular extension.
+grandparent co-residence in the adult cardiovascular extension. We did
+not apply formal distributional weights or inequality aversion
+parameters. Instead, the equity orientation of the model comes from the
+intervention design itself: targeted delivery to hotspot districts and
+to pregnant women, fetuses, infants and young children who face the
+highest developmental risk from lead exposure.
 
 # Results
 
 The Kitchen Package is favourable in the baseline specification, though
 with substantial uncertainty. The median earnings-only benefit-cost
-ratio (BCR_Cog) was 5.60, with a 5th to 95th percentile range of 2.00 to
-15.30; 0.30% of simulated runs fell below parity.
+ratio (BCR_Cog) was 4.61, with a 5th to 95th percentile range of 1.65 to
+12.79; 0.67% of simulated runs fell below parity.
 
-The baseline Kitchen Package cost a median of US\$15.24 per mother-child
-pair. It reduced child blood lead by a median of 1.60 ug/dL across
+The baseline Kitchen Package cost a median of US\$15.22 per mother-child
+pair. It reduced child blood lead by a median of 1.55 ug/dL across
 pathways during the time the interventions were in use. The
 population-level reduction is much lower than the modelled biological
 effect for a household that starts with unsafe products and then
@@ -506,45 +573,59 @@ incomplete adherence and residual unsafe-product use. In addition, most
 new products affect only part of the developmentally important period
 from late pregnancy through early childhood. After applying both
 implementation and developmental-timing adjustments, the median
-effective reduction used for IQ mapping was 0.72 ug/dL. The median IQ
-gain was 0.26 points, and the median lifetime earnings gain was
-US\$85.34.
+effective reduction used for IQ mapping was 0.60 ug/dL. The median IQ
+gain was 0.21 points, and the median lifetime earnings gain was
+US\$70.16.
+
+For policy scale, the deterministic modal run implies that in a country
+with 1 million annual births in sentinel-identified hotspot districts,
+the Kitchen Package would cost about US\$15.5 million and generate about
+US\$84.2 million in discounted total social benefits, or about
+US\$68.7 million in discounted net social benefits.
 
 When maternal and neonatal benefits were added, the median BCR rose to
-5.82, with a 5th to 95th percentile range of 2.17 to 15.67; 0.17% of
+4.80, with a 5th to 95th percentile range of 1.78 to 13.07; 0.50% of
 runs fell below parity. Adding adult cardiovascular benefits as a
 secondary extension increased the median total benefit-cost ratio to
-6.73, with a 5th to 95th percentile range of 2.62 to 17.35; 0.05% of
+5.69, with a 5th to 95th percentile range of 2.21 to 14.67; 0.09% of
 runs fell below parity.
 
 The Kohl Package also appears socially cost-effective, but the case is less
 robust than for the Kitchen Package. In the baseline analysis
 incorporating only the cognitive pathway, the median benefit-cost ratio
-was 5.89, with a 5th to 95th percentile range of 1.83 to 17.17; 0.62% of
+was 6.24, with a 5th to 95th percentile range of 1.96 to 17.98; 0.51% of
 runs fell below parity.
 
-The baseline Kohl Package cost a median of US\$5.72 per mother-child
-pair. It reduced child blood lead by a median of 1.01 ug/dL during the
+The baseline Kohl Package cost a median of US\$5.75 per mother-child
+pair. It reduced child blood lead by a median of 1.09 ug/dL during the
 time the intervention was in use. Because maternal and infant kohl
 substitution affects a shorter portion of the developmental window, and
 because the population estimate includes imperfect targeting and
 delivery frictions, the developmentally weighted reduction used for IQ
-mapping was 0.29 ug/dL. The median IQ gain was 0.11 points. The
+mapping was 0.31 ug/dL. The median IQ gain was 0.11 points. The
 corresponding median present value of lifetime earnings gain was
-US\$34.19.
+US\$36.66.
+
+Under the same deterministic modal scaling, 1 million annual births in
+sentinel-identified hotspot districts would imply about US\$5.6 million
+in programme cost, about US\$42.6 million in discounted total social
+benefits, and about US\$37.1 million in discounted net social benefits
+for the Kohl Package.
 
 ![Figure 2. Probabilistic sensitivity analysis of the Kitchen and Kohl packages. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines marking parity and the package medians.](../figures_main/figure_2_bcr_distribution.png)
 
 Including maternal and neonatal benefits increased the median
-benefit-cost ratio to 6.22, with a 5th to 95th percentile range of 2.00
-to 17.65; 0.36% of runs fell below parity. Adding adult cardiovascular
+benefit-cost ratio to 6.55, with a 5th to 95th percentile range of 2.13
+to 18.40; 0.36% of runs fell below parity. Adding adult cardiovascular
 benefits as a secondary extension increased the median total
-benefit-cost ratio to 6.49, with a 5th to 95th percentile range of 2.12
-to 18.14; 0.27% of runs fell below parity.
+benefit-cost ratio to 6.82, with a 5th to 95th percentile range of 2.24
+to 18.92; 0.30% of runs fell below parity.
 
 ## Robustness checks
 
-We examined three robustness checks. First, the baseline CVD
+We examined five robustness checks, including several multi-parameter
+scenarios in which related assumptions shift together. First, the baseline cardiovascular
+disease (CVD)
 specification assumes that adult health gains come only from directly
 modelled target users: the mother and, in the Kitchen Package, a
 probabilistically weighted co-resident grandparent. If half of recipient
@@ -564,12 +645,31 @@ steeper.
 Third, we examined alternative background exposure settings. Holding
 package mechanics at modal values, a low-background scenario with
 other-source BLL centred at roughly 3 ug/dL (SD 1.5) implies median
-nonlinear IQ gains of about 0.60 for the Kitchen Package and 0.21 for
+nonlinear IQ gains of about 0.51 for the Kitchen Package and 0.30 for
 the Kohl Package. A higher-background scenario with other-source BLL
 centred at roughly 7 ug/dL (SD 3.5) reduces those median gains to about
-0.32 and 0.10, respectively. These checks imply that BCRs will be higher
-where unsafe cookware or kohl account for a large share of total
-exposure, and lower where many other sources remain uncontrolled.
+0.27 and 0.16, respectively. The corresponding cognition-channel BCRs
+are about 10.33 for the Kitchen Package and 14.31 for the Kohl Package
+in the lower-background setting, versus about 5.50 and 7.47 in the
+higher-background setting. In other words, the economic case is
+strongest where unsafe cookware or kohl account for a large share of
+total exposure and weaker where many other sources remain uncontrolled.
+
+Fourth, we model a disadvantaged implementation setting with lower GDP
+per capita, lower expected productivity growth, lower ANC attendance,
+weaker delivery fidelity, lower merchant stock availability, lower
+voucher redemption and lower adherence. Operationally, we reduce the
+minimum, modal and maximum values of those macroeconomic and
+implementation parameters by 30%, while leaving biological effect
+parameters unchanged. As expected, correlated deterioration across these
+stages substantially lowers the median total BCRs, from 5.69 to 2.28
+for the Kitchen Package and from 6.82 to 2.15 for the Kohl Package.
+
+Fifth, we halve the cookware and kohl BLL-reduction parameters while
+leaving the calcium parameter unchanged. This directly tests how much of
+the result depends on optimistic assumptions about safe-product
+replacement. The median total BCR falls from 5.69 to 2.98 for the
+Kitchen Package and from 6.82 to 3.41 for the Kohl Package.
 
 Finally, local kohl practice matters. The main analysis assumes
 first-year kohl exposure can occur among boys and girls. If infant
@@ -580,7 +680,9 @@ case. At the same time, in our simulation the fixed costs of the
 sentinel package are a large share of the total cost. If kohl were
 distributed alongside other commodities (e.g., as an addition to the
 kitchen package) its costs would be cut almost in half, which almost
-doubles its cost-effectiveness.
+doubles its cost-effectiveness. Appendix Table A2 reports the median,
+5th percentile, 95th percentile and share of draws below parity for the
+main robustness checks.
 
 # Discussion
 
@@ -599,7 +701,8 @@ instead.
 
 The factors that matter most for local decisions are straightforward:
 how common the hazardous product is, whether the relevant health contact
-is reached, whether facilities and merchants have stock, whether
+is reached, whether facilities and merchants have the safe item in stock
+when the household presents, whether
 caregivers redeem and use the safer product, whether unsafe-product use
 falls enough to change exposure materially, and how large the resulting
 blood lead reduction is. In short, the central question for a ministry
@@ -614,6 +717,14 @@ cookware. At the same time, not every step should be treated
 pessimistically. Conditional on redeeming a voucher for a valuable
 durable good, use by the pregnant woman or toddler may be high because
 redemption itself is effortful and self-targeting.
+
+The robustness checks show that this optimism is not costless. When bad
+news arrives in correlated bundles across local income, ANC reach and
+implementation quality, or when several cookware and kohl effect-size
+assumptions deteriorate together, the estimated returns fall
+substantially. Even so, the median total BCR remains above parity in
+these deliberately adverse multi-parameter scenarios, suggesting that
+the basic social case is weakened rather than eliminated.
 
 An important goal of this analysis is to make the assumptions, code and
 uncertainty structure explicit enough that researchers and policymakers
@@ -630,7 +741,7 @@ Thus, any pilot or implementation effort should be led with local
 investigators, health-system actors and affected communities.
 
 Experience in Adjara, Georgia also suggests that ANC platforms can
-support lead-related biomonitoring, counselling and follow-up.36 37 The
+support lead-related biomonitoring, counselling and follow-up.36 The
 Sentinel Firewall addresses a different margin. Instead of relying on
 universal individual testing and then providing mitigation only after an
 elevated blood lead result, it considers universal safe-product
@@ -685,6 +796,12 @@ parameters apply everywhere, but whether local prevalence, prices,
 delivery capacity and measured blood lead response make substitution
 attractive in the specific region under consideration.
 
+At policy scale, the magnitudes are also meaningful: in the
+deterministic modal run, 1 million annual births in sentinel-identified
+hotspot districts would yield about US\$68.7 million in discounted net
+social benefits for the Kitchen Package and about US\$37.1 million for
+the Kohl Package.
+
 The case for the Sentinel Firewall is not that it replaces regulation,
 but that it offers governments a practical way to reduce harm
 immediately while building the capacity and enforcement systems needed
@@ -720,7 +837,7 @@ participants or identifiable individual-level data.
 
 ## Contributors
 
-DIL conceived the Sentinel Firewall framework, developed the model
+David I Levine conceived the Sentinel Firewall framework, developed the model
 structure and assumptions, interpreted the simulation results, drafted
 and revised the manuscript, and is responsible for the overall content
 as guarantor.
@@ -741,6 +858,9 @@ None declared.
 
 Patients and the public were not involved in the design, conduct,
 reporting or dissemination plans for this modelling study.
+No patients, frontline health workers, ministries or community members
+were directly engaged in shaping the present model, so there are no
+stakeholder-engagement effects to report for the analysis itself.
 
 ## Acknowledgments
 
@@ -753,13 +873,15 @@ Figure 1. Two-panel overview of the Sentinel Firewall logic. Panel A shows the c
 
 Figure 2. Probabilistic sensitivity analysis of the Kitchen and Kohl packages. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines marking parity and the package medians. Source file: `figure_2_bcr_distribution.png`.
 
-Figure A1. Probabilistic sensitivity analysis of the Kitchen Package. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines at parity and the median. Source file: `figure_a1_kitchen_bcr_distribution.png`.
+Figure A1. Online appendix only. Probabilistic sensitivity analysis of the Kitchen Package. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines at parity and the median. Source file: `figure_a1_kitchen_bcr_distribution.png`.
 
-Figure A2. Probabilistic sensitivity analysis of the Kohl Package. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines at parity and the median. Source file: `figure_a2_kohl_bcr_distribution.png`.
+Figure A2. Online appendix only. Probabilistic sensitivity analysis of the Kohl Package. Distribution of cognition-channel benefit-cost ratios from 10 000 Monte Carlo draws, with dashed lines at parity and the median. Source file: `figure_a2_kohl_bcr_distribution.png`.
 
-Figure A3. Tornado diagram for Kitchen Package cognition-only benefit-cost ratio. Source file: `figure_a3_kitchen_tornado.png`.
+Figure A3. Online appendix only. Tornado diagram for Kitchen Package cognition-only benefit-cost ratio. Source file: `figure_a3_kitchen_tornado.png`.
 
-Figure A4. Tornado diagram for Kohl Package cognition-only benefit-cost ratio. Source file: `figure_a4_kohl_tornado.png`.
+Figure A4. Online appendix only. Tornado diagram for Kohl Package cognition-only benefit-cost ratio. Source file: `figure_a4_kohl_tornado.png`.
+
+Figure A5. Online appendix only. Simplified timing pathways for the Kitchen Package. Calcium supplementation affects child exposure only through reduced maternal blood lead during pregnancy. Safe pot voucher and substitution affect child exposure through prenatal transfer, maternal exposure while nursing, and direct food pathways after complementary feeding begins. Safe child utensils affect child exposure only after complementary feeding begins. Source file: `figure_a5_kitchen_timing_pathways.png`.
 
 ## References
 
@@ -882,12 +1004,7 @@ Figure A4. Tornado diagram for Kohl Package cognition-only benefit-cost ratio. S
     exposure for women and children. UNICEF Georgia 2024. Available:
     https://www.unicef.org/georgia/evidence-and-sustained-leadership-help-reduce-lead-exposure-women-and-children
     [Accessed 29 Apr 2026].
-37. Ugreshelidze D, Khachidze N, Chakhnashvili N, et al. Association
-    between blood lead levels, haemoglobin and anaemia in pregnant
-    women: a register-based cohort study from the Autonomous Republic
-    of Adjara, Georgia. J Public Health 2026.
-    doi:10.1007/s10389-026-02482-x
-38. Husereau D, Drummond M, Augustovski F, et al. Consolidated Health
+37. Husereau D, Drummond M, Augustovski F, et al. Consolidated Health
     Economic Evaluation Reporting Standards 2022 (CHEERS 2022)
     statement: updated reporting guidance for health economic
     evaluations. BMJ 2022;376:e067975.

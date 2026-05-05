@@ -1,0 +1,4 @@
+metric,all_infants_median,mothers_and_girls_only_median,loss_pct_if_mothers_and_girls_only,all_infants_fail_pct,mothers_and_girls_only_fail_pct
+bcr_cog,5.8948928290473805,3.485053212042188,40.88012601570272,0.62,10.5
+bcr_plus_mn,6.2202645018827205,3.8943057974025583,37.393244351203265,0.36,6.41
+bcr_total,6.49497516749773,4.243725824726953,34.6614003089114,0.27,4.7

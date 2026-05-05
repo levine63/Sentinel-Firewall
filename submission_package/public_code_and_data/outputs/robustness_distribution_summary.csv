@@ -1,0 +1,12 @@
+check,package,bcr_type,median,p5,p95,fail_pct
+Adult spillover (+1 adult in half of recipient households),Kitchen,total,5.887860301176356,2.3227674469960906,15.03349691833483,0.08
+Adult spillover (+1 adult in half of recipient households),Kohl,total,6.966917453289092,2.3000084744758746,19.250472538460247,0.27999999999999997
+"Low-background nonlinear BLL (other-source mean 3, SD 1.5)",Kitchen,cognition,10.326950971311167,3.3327494704782086,29.249350149134486,0.01
+"Low-background nonlinear BLL (other-source mean 3, SD 1.5)",Kohl,cognition,14.307857681732099,4.207209505326832,44.74530705369122,0.03
+"High-background nonlinear BLL (other-source mean 7, SD 3.5)",Kitchen,cognition,5.495565428517407,1.6411121571184124,16.773484864097718,0.96
+"High-background nonlinear BLL (other-source mean 7, SD 3.5)",Kohl,cognition,7.4655565064032805,2.056665840061717,25.274361468271366,0.53
+Disadvantaged implementation setting,Kitchen,total,2.277640300012288,0.8668115125304147,5.889906326702138,7.86
+Disadvantaged implementation setting,Kohl,total,2.151636921645275,0.6869643563839904,6.083147465542663,13.74
+Half cookware and kohl effect sizes,Kitchen,total,2.9845639920009446,1.1822173713735737,7.629093535855827,2.4699999999999998
+Half cookware and kohl effect sizes,Kohl,total,3.412535234165333,1.1204749423777252,9.459475225099863,3.5900000000000003
+Kohl girls-only infant substitution,Kohl,total,4.632342615635357,1.149101431684187,15.678516113534668,3.5700000000000003

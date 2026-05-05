@@ -1,0 +1,3 @@
+package,n_trials,median_cost,share_cost_positive,max_bcr_plus_mn_identity_error,max_bcr_total_identity_error,share_dev_shares_sum_to_one
+Kitchen Baseline,10000,15.242690941876887,1.0,0.0,0.0,1.0
+Kohl Baseline,10000,5.717825373020904,1.0,0.0,0.0,1.0

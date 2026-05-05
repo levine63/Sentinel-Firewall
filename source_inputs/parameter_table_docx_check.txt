@@ -1,0 +1,868 @@
+Appendix Table A1. Parameter Values, Rationale, and Citations
+
+This table is the citation-complete companion to the working parameter
+file used in the simulation. Where a parameter is not available from a
+single direct study, the table states that it is a program-design or
+synthesis assumption and identifies the literature used to anchor its
+range.
+
+A. Macroeconomic and life-table parameters
+
+  ------------------------------------------------------------------------------------------------------------
+  Variable                            Min        Mode         Max Rationale              Citation basis
+  --------------------------- ----------- ----------- ----------- ---------------------- ---------------------
+  gdp_ppp_per_capita                 2000        4000        8000 Represents a           World Bank, GDP per
+                                                                  conservative LMIC      capita, PPP (current
+                                                                  district-level range   international $),
+                                                                  rather than an         lower-middle-income
+                                                                  all-country global     and country
+                                                                  mean.                  comparator series.
+                                                                                         World Bank
+
+  labor_force_participation          0.40        0.55        0.70 Spans lower            ILOSTAT labour force
+                                                                  female-participation   participation
+                                                                  settings through       snapshot. ILOSTAT
+                                                                  broader all-adult      
+                                                                  labor-force            
+                                                                  participation levels   
+                                                                  common in LMICs.       
+
+  growth                             0.00        0.02       0.025 Conservative long-run  Program-design
+                                                                  productivity growth    assumption anchored
+                                                                  assumption for LMIC    in World Bank and ILO
+                                                                  decision analysis.     growth context; not
+                                                                                         taken from a single
+                                                                                         causal paper.
+
+  discount                           0.01        0.03        0.05 Standard               Briggs, Claxton, and
+                                                                  health-economic social Sculpher (2006).
+                                                                  discount range.        
+
+  p18                                0.92        0.95        0.97 Reflects survival to   UN child mortality
+                                                                  adulthood in           context and World
+                                                                  contemporary LMIC      Bank life-table
+                                                                  settings.              indicators. UNICEF/UN
+                                                                                         IGME child mortality;
+                                                                                         World Bank survival
+                                                                                         indicators. UNICEF
+
+  p65                                0.68        0.78        0.85 Captures plausible     World Bank survival
+                                                                  unconditional survival to age 65 indicator.
+                                                                  to age 65 across       World Bank
+                                                                  higher- and            
+                                                                  lower-survival LMIC    
+                                                                  settings.              
+
+  k                                   1.5         2.0         3.0 Shape parameter used   Structural modeling
+                                                                  to concentrate         assumption; no direct
+                                                                  mortality later in the empirical source.
+                                                                  working life.          
+
+  labor_entry_age                      14          18          20 Captures informal      ILO child labor and
+                                                                  labor entry at the low youth labor-force
+                                                                  end and delayed formal context;
+                                                                  entry at the high end. program-design range.
+
+  mom_age                              18          25          35 Plausible age range    DHS fertility and
+                                                                  for mothers reached by maternal age
+                                                                  ANC in LMIC settings.  distributions;
+                                                                                         program-design range.
+
+  gp_age                               42          52          70 Representative         Household-structure
+                                                                  intergenerational age  and fertility-timing
+                                                                  span for co-resident   synthesis;
+                                                                  grandparents.          program-design range.
+
+  gp_coresidence_prob                0.20        0.50        0.70 Captures substantial   DHS and household
+                                                                  cross-setting          structure synthesis;
+                                                                  variation in           program-design range.
+                                                                  multigenerational      
+                                                                  co-residence.          
+  ------------------------------------------------------------------------------------------------------------
+
+B. Child cognition and earnings parameters
+
+  --------------------------------------------------------------------------------------
+  Variable              Min        Mode         Max Rationale             Citation basis
+  ------------- ----------- ----------- ----------- --------------------- --------------
+  iq_per_bll           0.20        0.35        0.60 Linear approximation  Canfield et
+                                                    to the relationship   al. (2003);
+                                                    between               Lanphear et
+                                                    developmentally       al. (2005);
+                                                    averaged child BLL    Jusko et
+                                                    and cognition. The    al. (2008);
+                                                    widened range         Schnaas et
+                                                    reflects both the     al. (2006);
+                                                    low-level             Crawfurd et
+                                                    nonlinearity in the   al. (2025).
+                                                    cohort literature and Canfield,
+                                                    the fact that this    Lanphear,
+                                                    model translates      Jusko,
+                                                    shorter exposure      Schnaas,
+                                                    changes into an       Crawfurd et
+                                                    average over a longer al.
+                                                    developmental window. 
+
+  earn_per_iq        0.0030      0.0050      0.0100 Percent earnings gain Ozawa et
+                                                    per IQ point. The     al. (2022);
+                                                    minimum reflects the  Grosse et
+                                                    LMIC                  al. (2002);
+                                                    cognition-to-wage     Hanushek and
+                                                    evidence after        Woessmann
+                                                    allowing for          (2008). Ozawa,
+                                                    labor-market          Grosse et al.
+                                                    friction; the mode    
+                                                    uses the lower end of 
+                                                    the lead valuation    
+                                                    range; the maximum    
+                                                    aligns with           
+                                                    developing-country    
+                                                    cognitive-skill       
+                                                    estimates while       
+                                                    avoiding larger       
+                                                    high-income-country   
+                                                    values.               
+
+  tax_rate             0.05        0.10        0.15 Low average fiscal    Policy
+                                                    recapture assumption  parameter;
+                                                    for LMIC public       reported
+                                                    finance.              separately
+                                                                          from the
+                                                                          social BCR and
+                                                                          not treated as
+                                                                          a cost
+                                                                          parameter in
+                                                                          conservative
+                                                                          draws.
+  --------------------------------------------------------------------------------------
+
+C. Implementation and prevalence parameters
+
+  ----------------------------------------------------------------------------------------------------------------------------------
+  Variable                                  Min        Mode         Max Rationale                                 Citation basis
+  --------------------------------- ----------- ----------- ----------- ----------------------------------------- ------------------
+  p_att_anc                                0.55        0.82        0.95 ANC-1 attendance benchmark.               UNICEF antenatal
+                                                                                                                  care data. UNICEF
+
+  p_att_imm                                0.50        0.80        0.95 Reflects DTP3-style immunization platform UNICEF
+                                                                        reach in many LMIC settings.              immunization
+                                                                                                                  statistics. UNICEF
+
+  p_att_birth                              0.40        0.65        0.85 Institutional delivery range retained as  UNICEF and
+                                                                        a reference contact parameter. Infant     DHS-style
+                                                                        kohl now uses the combined                institutional
+                                                                        facility-delivery-or-early-immunization   delivery coverage
+                                                                        contact below.                            context;
+                                                                                                                  program-design
+                                                                                                                  range.
+
+  p_att_infant_kohl_contact                0.55        0.80        0.95 Combined probability that an infant can   UNICEF
+                                                                        be reached for safe kohl through either   institutional
+                                                                        facility delivery or early immunization   delivery and
+                                                                        catch-up. The mode is a union of          immunization
+                                                                        correlated contacts, not the sum of       coverage
+                                                                        independent delivery and immunization     benchmarks;
+                                                                        probabilities.                            program-design
+                                                                                                                  assumption
+                                                                                                                  requiring local
+                                                                                                                  validation. UNICEF
+                                                                                                                  delivery, UNICEF
+                                                                                                                  immunization
+
+  prev_pot                                 0.50        0.75        0.90 Hazard prevalence among households in     Pure Earth and
+                                                                        screened red districts. The range assumes hotspot screening
+                                                                        sentinel screening can target somewhat    logic; synthesis
+                                                                        better than a broad district average.     assumption
+                                                                                                                  requiring local
+                                                                                                                  validation.
+
+  prev_kohl_maternal                       0.40        0.60        0.80 Maternal kohl prevalence in higher-use    Survey,
+                                                                        settings selected for intervention.       ethnographic, and
+                                                                                                                  clinical synthesis
+                                                                                                                  of traditional eye
+                                                                                                                  cosmetic use; see
+                                                                                                                  kohl citations
+                                                                                                                  below.
+
+  prev_kohl_infant                         0.30        0.50        0.75 Infant kohl prevalence among infants in   Survey and
+                                                                        high-use settings. The main model allows  ethnographic
+                                                                        exposure among boys as well as girls; a   synthesis; see
+                                                                        separate robustness check restricts       kohl citations
+                                                                        infant kohl substitution to girls only.   below.
+
+  prev_utensils                            0.40        0.60        0.80 Unsafe utensil prevalence in targeted     Program-design
+                                                                        hotspots.                                 assumption
+                                                                                                                  informed by
+                                                                                                                  lead-glazed
+                                                                                                                  ceramic exposure
+                                                                                                                  literature and
+                                                                                                                  sentinel targeting
+                                                                                                                  logic.
+
+  fidelity                                 0.30        0.60        0.80 Generic delivery fidelity for             Essential
+                                                                        clinic-distributed components.            medicines
+                                                                                                                  availability
+                                                                                                                  literature and
+                                                                                                                  implementation
+                                                                                                                  synthesis; broader
+                                                                                                                  LMIC availability
+                                                                                                                  reviews. PubMed
+
+  adherence                                0.30        0.50        0.60 Complete use or substitution rate after   Behavioral and
+                                                                        receipt for non-pot components.           implementation
+                                                                                                                  synthesis;
+                                                                                                                  program-design
+                                                                                                                  range.
+
+  p_voucher_issued                         0.40        0.70        0.90 Probability eligible ANC attendee         Voucher-program
+                                                                        actually receives pot voucher.            implementation
+                                                                                                                  assumption
+                                                                                                                  informed by health
+                                                                                                                  subsidy
+                                                                                                                  distribution
+                                                                                                                  literature.
+
+  p_merchant_stock                         0.60        0.80        0.95 Probability approved merchant has stock   Supply chain and
+                                                                        when voucher holder presents. The higher  medicines
+                                                                        values reflect active contracting with    availability
+                                                                        approved retailers rather than passive    literature;
+                                                                        clinic stock alone.                       implementation
+                                                                                                                  assumption.
+
+  p_redeem                                 0.60        0.75        0.90 Voucher redemption for a high-value       Dupas et
+                                                                        durable household product.                al. (2016) and
+                                                                                                                  related subsidy
+                                                                                                                  redemption
+                                                                                                                  evidence; values
+                                                                                                                  are higher than
+                                                                                                                  low-value
+                                                                                                                  preventive
+                                                                                                                  products because
+                                                                                                                  pots are useful
+                                                                                                                  durable goods.
+                                                                                                                  PubMed
+
+  p_use_targeted_after_redemption          0.75        0.90        0.98 Conditional use after redemption should   Anchored in the
+                                                                        be high because redemption is effortful   self-selection
+                                                                        and self-targeting.                       logic of voucher
+                                                                                                                  uptake rather than
+                                                                                                                  a direct
+                                                                                                                  product-specific
+                                                                                                                  pot trial; see
+                                                                                                                  Dupas et
+                                                                                                                  al. (2016). PMC
+
+  residual_unsafe_use_harm                 0.05        0.15        0.35 Allows for continued unsafe pot use even  Program-design
+                                                                        after redemption.                         assumption
+                                                                                                                  representing
+                                                                                                                  partial switching
+                                                                                                                  or stacking.
+
+  fetal_transfer_coeff                     0.70        0.80        0.95 Fraction of maternal lead reduction       WHO (2024) on
+                                                                        during pregnancy transmitted to fetal     maternal bone lead
+                                                                        lead reduction.                           mobilization and
+                                                                                                                  fetal exposure;
+                                                                                                                  Ettinger et
+                                                                                                                  al. (2009) on
+                                                                                                                  lowering maternal
+                                                                                                                  BLL during
+                                                                                                                  pregnancy;
+                                                                                                                  Al-Jawadi et
+                                                                                                                  al. (2009) and
+                                                                                                                  related
+                                                                                                                  maternal-cord
+                                                                                                                  evidence on
+                                                                                                                  placental
+                                                                                                                  transfer. WHO,
+                                                                                                                  Ettinger,
+                                                                                                                  Al-Jawadi et al.
+
+  share_prenatal_last4m                    0.20        0.30        0.40 Share of developmental cognitive harm     Structural timing
+                                                                        attributed to the last four months in     parameter informed
+                                                                        utero.                                    by prenatal lead
+                                                                                                                  and
+                                                                                                                  neurodevelopment
+                                                                                                                  evidence
+                                                                                                                  suggesting
+                                                                                                                  substantial
+                                                                                                                  prenatal
+                                                                                                                  sensitivity but
+                                                                                                                  not exclusive
+                                                                                                                  prenatal
+                                                                                                                  determination. See
+                                                                                                                  Schnaas et
+                                                                                                                  al. (2006), Kim et
+                                                                                                                  al. (2013), and
+                                                                                                                  Bellinger et
+                                                                                                                  al. (1987).
+
+  share_year1                              0.20        0.30        0.40 Share of developmental cognitive harm     Structural timing
+                                                                        attributed to the first year of life.     parameter informed
+                                                                                                                  by infancy and
+                                                                                                                  early-childhood
+                                                                                                                  lead evidence. The
+                                                                                                                  residual share is
+                                                                                                                  assigned to ages 2
+                                                                                                                  to 5 so that the
+                                                                                                                  three shares sum
+                                                                                                                  to one. See Jusko
+                                                                                                                  et al. (2008),
+                                                                                                                  Bellinger et
+                                                                                                                  al. (1987), and
+                                                                                                                  Lanphear et
+                                                                                                                  al. (2005).
+  ----------------------------------------------------------------------------------------------------------------------------------
+
+D. Product-specific blood lead reduction parameters
+
+  -------------------------------------------------------------------------------------------------------
+  Variable                           Min        Mode         Max Rationale               Citation basis
+  -------------------------- ----------- ----------- ----------- ----------------------- ----------------
+  bll_pot_child                      1.0         4.0        10.0 Intended as the         Cookware
+                                                                 postnatal child BLL     leaching and
+                                                                 reduction during active exposure
+                                                                 use among households    evidence
+                                                                 that fully switch from  motivate the
+                                                                 hazardous cookware to   order of
+                                                                 the safe replacement    magnitude, but
+                                                                 for the target child.   the parameter
+                                                                 It explicitly excludes  remains a
+                                                                 any prenatal child      synthesis
+                                                                 benefit from lower      assumption
+                                                                 maternal lead, which is rather than a
+                                                                 modeled separately      directly
+                                                                 through                 identified
+                                                                 fetal_transfer_coeff.   treatment
+                                                                                         effect.
+                                                                                         Weidenhamer et
+                                                                                         al. (2014) show
+                                                                                         that artisanal
+                                                                                         aluminum
+                                                                                         cookware in
+                                                                                         Cameroon can
+                                                                                         leach
+                                                                                         substantial lead
+                                                                                         into food;
+                                                                                         Weidenhamer et
+                                                                                         al. (2022)
+                                                                                         document
+                                                                                         contaminated
+                                                                                         source metals;
+                                                                                         Fellows et
+                                                                                         al. (2025)
+                                                                                         review cookware
+                                                                                         as a lead source
+                                                                                         and emphasize
+                                                                                         heterogeneity in
+                                                                                         contamination
+                                                                                         and exposure.
+                                                                                         Those papers
+                                                                                         support a wide
+                                                                                         range rather
+                                                                                         than a narrow
+                                                                                         point estimate.
+
+  bll_pot_mother                     0.5         2.0         5.0 Maternal BLL reduction  Structural
+                                                                 from safer cookware,    extension from
+                                                                 smaller in the mode     cookware
+                                                                 than the child effect   literature;
+                                                                 because maternal intake synthesis
+                                                                 is less concentrated on assumption
+                                                                 child-feeding pathways  anchored in
+                                                                 and because adult       Weidenhamer et
+                                                                 exposure is more        al. (2014, 2022)
+                                                                 diffuse.                and Fellows et
+                                                                                         al. (2025). The
+                                                                                         lower mode
+                                                                                         relative to the
+                                                                                         child effect is
+                                                                                         a modeling
+                                                                                         judgment rather
+                                                                                         than a directly
+                                                                                         estimated causal
+                                                                                         contrast.
+
+  bll_mug_child                      0.5         2.0         6.0 Child BLL reduction     Lead-glazed
+                                                                 from replacing          food-contact
+                                                                 contaminated child      studies support
+                                                                 utensils or feeding     the pathway, but
+                                                                 vessels during active   the exact effect
+                                                                 use.                    remains an
+                                                                                         informed
+                                                                                         extrapolation.
+                                                                                         Romieu et
+                                                                                         al. (1994)
+                                                                                         linked ceramic
+                                                                                         ware use to
+                                                                                         elevated child
+                                                                                         BLLs in Mexico,
+                                                                                         and related
+                                                                                         ceramic exposure
+                                                                                         reports show
+                                                                                         that
+                                                                                         food-contact
+                                                                                         ceramics can
+                                                                                         contribute
+                                                                                         materially to
+                                                                                         ingestion.
+                                                                                         Because the
+                                                                                         literature is
+                                                                                         strongest on
+                                                                                         exposure
+                                                                                         association
+                                                                                         rather than
+                                                                                         direct
+                                                                                         substitution
+                                                                                         trials, the
+                                                                                         model uses a
+                                                                                         wide range.
+
+  bll_calc_mother                    0.5         1.2         2.0 Maternal BLL reduction  Ettinger et
+                                                                 from calcium during     al. (2009)
+                                                                 pregnancy.              randomized
+                                                                                         trial. PubMed
+
+  bll_maternal_kohl_mother           0.5         2.0         5.0 Maternal BLL reduction  Kohl exposure
+                                                                 from switching to       studies and
+                                                                 lead-free kohl. The     review
+                                                                 widened range reflects  literature imply
+                                                                 the fact that most      a moderate
+                                                                 underlying studies      maternal effect
+                                                                 compare users and       but leave wide
+                                                                 non-users rather than   uncertainty
+                                                                 directly estimating the around the
+                                                                 maternal change from    causal change
+                                                                 replacement.            from
+                                                                                         substitution.
+                                                                                         See Sadeq et
+                                                                                         al. (2021); Hore
+                                                                                         et al. (2024);
+                                                                                         and related
+                                                                                         traditional
+                                                                                         cosmetic
+                                                                                         exposure
+                                                                                         studies.
+
+  bll_infant_kohl_child              1.5         5.0        10.0 Child BLL reduction     Kohl-use
+                                                                 from replacing leaded   meta-analysis
+                                                                 infant kohl with a safe and contemporary
+                                                                 alternative during      case-control
+                                                                 active use.             evidence suggest
+                                                                                         an incremental
+                                                                                         child effect
+                                                                                         often centered
+                                                                                         around 5 to 6
+                                                                                         ug/dL, but with
+                                                                                         wider
+                                                                                         study-to-study
+                                                                                         dispersion; the
+                                                                                         widened range
+                                                                                         reflects that
+                                                                                         uncertainty.
+                                                                                         Sadeq et
+                                                                                         al. (2021);
+                                                                                         Keosaian et
+                                                                                         al. (2019); Hore
+                                                                                         et al. (2024).
+                                                                                         Meta-analysis,
+                                                                                         Keosaian, Hore
+                                                                                         et al.
+  -------------------------------------------------------------------------------------------------------
+
+E. Costs and overhead
+
+  ----------------------------------------------------------------------------------------------------------
+  Variable                                Min        Mode         Max Rationale         Citation basis
+  ------------------------------- ----------- ----------- ----------- ----------------- --------------------
+  cost_pot_direct                         8.0        12.0        15.0 Direct cost of    Program-budget
+                                                                      safe pot before   assumption informed
+                                                                      logistics and     by procurement and
+                                                                      overhead.         retail comparators;
+                                                                                        requires local
+                                                                                        validation before
+                                                                                        implementation.
+
+  cost_utensils_direct                    1.0         1.5         2.5 Direct cost of    Program-budget
+                                                                      utensils or       assumption informed
+                                                                      cup-spoon         by low-cost
+                                                                      substitute.       commodity
+                                                                                        procurement
+                                                                                        comparators.
+
+  cost_calcium_direct                    1.25        1.75         3.0 Direct cost of    WHO calcium
+                                                                      calcium course.   guideline context
+                                                                                        and UNICEF
+                                                                                        supply-style
+                                                                                        commodity pricing.
+                                                                                        WHO
+
+  cost_kohl_maternal_direct               0.4        0.75        1.25 Direct cost of    Program-budget
+                                                                      safe maternal     assumption informed
+                                                                      kohl substitute.  by low-cost cosmetic
+                                                                                        substitution
+                                                                                        framing; local
+                                                                                        market validation
+                                                                                        needed.
+
+  cost_kohl_infant_direct                 1.2         1.5         3.0 Direct cost of    Program-budget
+                                                                      infant kohl       assumption; local
+                                                                      substitute.       procurement
+                                                                                        validation needed.
+
+  cost_explain                            0.3        0.35         0.5 Counseling and    Health worker
+                                                                      explanation cost  time-cost assumption
+                                                                      per relevant      informed by WHO
+                                                                      contact.          costing conventions
+                                                                                        and low-wage program
+                                                                                        delivery settings.
+
+  cost_bulk_distribution_margin           3.0         4.0         5.0 Bulk distribution Program-logistics
+                                                                      cost plus         and retailer-margin
+                                                                      retailer margin   assumption.
+                                                                      for pot voucher   
+                                                                      redemption. The   
+                                                                      previous bulk     
+                                                                      distribution line 
+                                                                      is increased by   
+                                                                      approximately 2   
+                                                                      to include        
+                                                                      merchant          
+                                                                      compensation      
+                                                                      explicitly.       
+
+  cost_dist_light                        0.25         0.5         1.0 Distribution cost Program-logistics
+                                                                      for smaller       assumption.
+                                                                      goods.            
+
+  logistics_markup                        0.3         0.6         1.0 Program markup    Program-budget
+                                                                      applied to direct assumption informed
+                                                                      product plus      by public-health
+                                                                      distribution      supply-chain and
+                                                                      costs. Because    administration
+                                                                      retailer margin   experience.
+                                                                      is now included   
+                                                                      in the bulk pot   
+                                                                      distribution      
+                                                                      line, this        
+                                                                      parameter covers  
+                                                                      wastage,          
+                                                                      supply-chain      
+                                                                      overhead,         
+                                                                      shrinkage,        
+                                                                      supervision, and  
+                                                                      health-system     
+                                                                      administration.   
+
+  district_fixed_cost                   20000       50000      100000 Fully loaded      Program-design
+                                                                      national and      assumption informed
+                                                                      district-level    by XRF procurement,
+                                                                      sentinel          supervision,
+                                                                      screening and     training,
+                                                                      program setup     coordination, and
+                                                                      cost.             district operations
+                                                                                        needs.
+
+  district_births                        4000       20000       50000 Effective births  Administrative and
+                                                                      per screening     fertility-design
+                                                                      unit for          assumption anchored
+                                                                      spreading         in DHS birth rates,
+                                                                      overhead. The     district
+                                                                      mode assumes a    heterogeneity, and
+                                                                      shared-service    capital-efficiency
+                                                                      model in which    logic.
+                                                                      XRF assets and    
+                                                                      specialized       
+                                                                      supervision are   
+                                                                      used across       
+                                                                      multiple smaller  
+                                                                      districts or      
+                                                                      catchments.       
+  ----------------------------------------------------------------------------------------------------------
+
+F. Maternal, neonatal, and cardiovascular valuation parameters
+
+  ----------------------------------------------------------------------------------------------------
+  Variable                           Min        Mode         Max Rationale        Citation basis
+  -------------------------- ----------- ----------- ----------- ---------------- --------------------
+  preeclampsia_base_prev            0.02        0.04        0.06 Plausible        WHO maternal health
+                                                                 baseline         guidance and
+                                                                 prevalence range obstetric
+                                                                 in LMIC          epidemiology
+                                                                 settings.        context; range
+                                                                                  chosen for policy
+                                                                                  modeling.
+
+  preeclampsia_or                  1.016       1.018       1.020 Per-1 ug/dL      Poropat et
+                                                                 increase in lead al. (2018). PubMed
+                                                                 and preeclampsia 
+                                                                 risk.            
+
+  preterm_base_prev                 0.08        0.12        0.15 Baseline preterm WHO estimates 4% to
+                                                                 prevalence.      16% across
+                                                                                  countries. WHO
+
+  preterm_or                        1.02       1.025        1.03 Per-1 ug/dL      Systematic review
+                                                                 increase in      and meta-analysis
+                                                                 prenatal lead    evidence on maternal
+                                                                 and preterm      lead and preterm
+                                                                 risk.            birth; Habibian et
+                                                                                  al. (2022),
+                                                                                  supplemented by
+                                                                                  broader prenatal
+                                                                                  lead and
+                                                                                  birth-outcome
+                                                                                  evidence. PubMed
+
+  preeclampsia_timing_mult          0.50        0.75        1.00 Share of the     Structural timing
+                                                                 full maternal    parameter. Clinical
+                                                                 BLL reduction    disease onset after
+                                                                 treated as       20 weeks suggests
+                                                                 relevant to      later pregnancy
+                                                                 preeclampsia     matters more than a
+                                                                 when the         simple share of
+                                                                 intervention     total pregnancy, but
+                                                                 begins around    timing-specific lead
+                                                                 mid-pregnancy.   estimates are
+                                                                                  limited; the wide
+                                                                                  range reflects that
+                                                                                  uncertainty.
+
+  preterm_timing_mult               0.40        0.70        1.00 Share of the     Structural timing
+                                                                 full maternal    parameter. The
+                                                                 BLL reduction    prenatal lead and
+                                                                 treated as       preterm literature
+                                                                 relevant to      supports an
+                                                                 preterm birth    in-pregnancy effect,
+                                                                 when the         but
+                                                                 intervention     trimester-specific
+                                                                 begins around    timing is less
+                                                                 mid-pregnancy.   settled than for
+                                                                                  preeclampsia; the
+                                                                                  wide range reflects
+                                                                                  that uncertainty.
+
+  neonatal_daly_mult                 0.5        0.75         1.0 DALYs per        Reduced-form policy
+                                                                 preterm case     parameter, not a
+                                                                 averted in       direct single-study
+                                                                 reduced-form     estimate.
+                                                                 valuation.       
+
+  cvd_daly_per_ug_lifetime         0.002      0.0033       0.005 Lifetime adult   Anchored in global
+                                                                 DALYs per        burden modeling on
+                                                                 1 ug/dL          lead and
+                                                                 sustained        cardiovascular
+                                                                 reduction.       disease; scenario
+                                                                                  parameter. Larsen
+                                                                                  and Sanchez-Triana
+                                                                                  (2023).
+
+  vsly_mult                          1.0         1.6         3.0 Value of a       Robinson, Hammitt,
+                                                                 statistical life and O’Keeffe (2019).
+                                                                 year relative to PubMed
+                                                                 annual           
+                                                                 productivity.    
+
+  preeclampsia_daly_wt             0.001       0.003       0.005 DALYs per        Reduced-form
+                                                                 preeclampsia     valuation parameter.
+                                                                 case in          
+                                                                 reduced-form     
+                                                                 approximation.   
+
+  years_pot                            2           4           5 Duration of pot  Program-duration
+                                                                 protection.      assumption with
+                                                                                  widened uncertainty
+                                                                                  about replacement
+                                                                                  persistence.
+
+  years_kohl_maternal                0.5           1           2 Duration of      Program-duration
+                                                                 maternal kohl    assumption with
+                                                                 protection.      widened uncertainty
+                                                                                  about continued use
+                                                                                  of the substitute.
+
+  years_kohl_infant                  0.5           1           2 Duration of      Program-duration
+                                                                 infant kohl      assumption with
+                                                                 protection.      widened uncertainty
+                                                                                  about how long
+                                                                                  substitute use
+                                                                                  persists.
+
+  years_utensils                       1           2           3 Duration of      Program-duration
+                                                                 child utensil    assumption with
+                                                                 protection.      widened uncertainty.
+
+  years_calcium                     0.25         0.5           1 Duration of      Program-duration
+                                                                 calcium effect   assumption widened
+                                                                 during           to better reflect a
+                                                                 pregnancy.       finite pregnancy
+                                                                                  course.
+
+  adult_reference_years               65          65          65 Reference age    Structural modeling
+                                                                 for discounting  assumption.
+                                                                 adult            
+                                                                 cardiovascular   
+                                                                 gains.           
+
+  gp_pot_effect_multiplier           0.5         0.5         0.5 Grandparent      Structural modeling
+                                                                 receives half    assumption.
+                                                                 the pot effect.  
+  ----------------------------------------------------------------------------------------------------
+
+Selected references
+
+Briggs, Andrew, Karl Claxton, and Mark Sculpher. Decision Modelling for
+Health Economic Evaluation. Oxford: Oxford University Press, 2006.
+
+Bellinger, David, Alan Leviton, John Waternaux, Herbert Needleman, and
+C. Rabinowitz. “Longitudinal analyses of prenatal and postnatal lead
+exposure and early cognitive development.” New England Journal of
+Medicine 316, no. 17 (1987): 1037-1043.
+
+Canfield, Richard L., Charles R. Henderson Jr., Deborah A. Cory-Slechta,
+Christopher Cox, Todd A. Jusko, and Bruce P. Lanphear. “Intellectual
+Impairment in Children with Blood Lead Concentrations below 10 microg
+per Deciliter.” New England Journal of Medicine 348, no. 16 (2003):
+1517-1526. PubMed
+
+Crawfurd, Lee, Rory Todd, Susannah Hares, Justin Sandefur, and
+coauthors. “The Effect of Lead Exposure on Children’s Learning in the
+Developing World.” World Bank Research Observer 40, no. 2 (2025):
+229-263. Oxford Academic
+
+Dupas, Pascaline, Vivian Hoffmann, Michael Kremer, and Alix Peterson
+Zwane. “Targeting health subsidies through a nonprice mechanism: A
+randomized controlled trial in Kenya.” Science 353, no. 6302 (2016):
+889-895. PubMed
+
+Ettinger, Adrienne S., Hector Lamadrid-Figueroa, Martha M. Tellez-Rojo,
+Adriana Mercado-Garcia, Karen E. Peterson, Joel Schwartz, Howard Hu, and
+Mauricio Hernandez-Avila. “Effect of calcium supplementation on blood
+lead levels in pregnancy: a randomized placebo-controlled trial.”
+Environmental Health Perspectives 117, no. 1 (2009): 26-31. PubMed
+
+Ericson, Bret, and Mary Jean Brown. “Lead-Attributable Productivity
+Losses in Low- and Middle-Income Countries.” Health Economics, Policy
+and Law (2025). PubMed
+
+Fellows, Katie M., Shar Samy, and Stephen G. Whittaker. “Evaluating
+metal cookware as a source of lead exposure.” Journal of Exposure
+Science & Environmental Epidemiology 35, no. 3 (2025): 342-350. PubMed
+
+Grosse, Scott D., and Ying Zhou. “Monetary Valuation of Children’s
+Cognitive Outcomes in Economic Evaluations from a Societal Perspective:
+A Review.” International Journal of Environmental Research and Public
+Health 18, no. 11 (2021): 5830.
+
+Grosse, Scott D., Thomas D. Matte, Joel Schwartz, and Richard J.
+Jackson. “Economic Gains Resulting from the Reduction in Children’s
+Exposure to Lead in the United States.” Environmental Health
+Perspectives 110, no. 6 (2002): 563-569. EPA HERO
+
+Hanushek, Eric A., and Ludger Woessmann. “The Role of Cognitive Skills
+in Economic Development.” Journal of Economic Literature 46, no. 3
+(2008): 607-668.
+
+Hore, Paromita, Slavenka Sedlar, Jacqueline Ehrlich, and coauthors.
+“Traditional Eye Cosmetics and Cultural Powders as a Source of Lead
+Exposure.” Pediatrics 154, Supplement 2 (2024). PubMed
+
+ILOSTAT. “Labour force participation rate.” International Labour
+Organization data portal, accessed April 2026. ILOSTAT
+
+Jusko, Todd A., Charles R. Henderson Jr., Bruce P. Lanphear, Deborah A.
+Cory-Slechta, Patrick J. Parsons, and Richard L. Canfield. “Blood lead
+concentrations < 10 microg/dL and child intelligence at 6 years of age.”
+Environmental Health Perspectives 116, no. 2 (2008): 243-248. PubMed
+
+Kim, Yeni, Eun-Hee Ha, Hyesook Park, Mina Ha, Yangho Kim, Yun-Chul Hong,
+Eui-Jung Kim, and Bung-Nyun Kim. “Prenatal lead and cadmium co-exposure
+and infant neurodevelopment at 6 months of age: the Mothers and
+Children’s Environmental Health study.” Neurotoxicology 35 (2013):
+15-22. PubMed
+
+Keosaian, Julia, Thuppil Venkatesh, Salvatore D’Amico, Paula Gardiner,
+and Robert Saper. “Blood Lead Levels of Children Using Traditional
+Indian Medicine and Cosmetics: A Feasibility Study.” Global Advances in
+Health and Medicine 8 (2019). SAGE
+
+Lanphear, Bruce P., Richard Hornung, Jane Khoury, Kimberly Yolton, Peter
+Baghurst, David C. Bellinger, Richard L. Canfield, et al. “Low-level
+environmental lead exposure and children’s intellectual function: an
+international pooled analysis.” Environmental Health Perspectives 113,
+no. 7 (2005): 894-899. PubMed
+
+Larsen, Bjorn, and Ernesto Sanchez-Triana. “Global health burden and
+cost of lead exposure in children and adults: a health impact and
+economic modelling analysis.” Lancet Planetary Health 7, no. 10 (2023):
+e831-e840.
+
+Ozawa, Sachiko, Sarah K. Laing, Colleen R. Higgins, Tatenda T. Yemeke,
+Christine C. Park, Rebecca Carlson, Young Eun Ko, L. Beryl Guterman, and
+Saad B. Omer. “Educational and economic returns to cognitive ability in
+low- and middle-income countries: A systematic review.” World
+Development 149 (2022): 105668. PubMed
+
+Poropat, Arthur E., Mark A. S. Laidlaw, Bruce Lanphear, Andrew Ball, and
+Howard W. Mielke. “Blood lead and preeclampsia: A meta-analysis and
+review of implications.” Environmental Research 160 (2018): 12-19.
+PubMed
+
+Robinson, Lisa A., James K. Hammitt, and Lucy O’Keeffe. “Valuing
+Mortality Risk Reductions in Global Benefit-Cost Analysis.” Journal of
+Benefit-Cost Analysis 10, Supplement 1 (2019): 15-50. PubMed
+
+Sadeq, Mina, Touria Benamar, and Antonio Facciorusso. “Is the
+application of Kohl to eyes associated with increased blood lead levels
+in children? A meta-analysis.” PAMJ-One Health 4 (2021): 17. Full text
+
+Schnaas, Lourdes, Hector Lamadrid-Figueroa, Martha M. Tellez-Rojo,
+Sandra Hernandez-Avila, Adriana Mercado-Garcia, Howard Hu, and Mauricio
+Hernandez-Avila. “Reduced intellectual development in children with
+prenatal lead exposure.” Environmental Health Perspectives 114, no. 5
+(2006): 791-797. PubMed
+
+UNICEF. “Antenatal care.” UNICEF Data, updated November 1, 2024. UNICEF
+
+UNICEF. “Vaccination and Immunization Statistics.” UNICEF Data, accessed
+April 2026. UNICEF
+
+Vigeh, Mohsen, Leyla Sahebi, and Kazuhito Yokoyama. “Prenatal blood lead
+levels and birth weight: a meta-analysis study.” Journal of
+Environmental Health Science and Engineering 21, no. 1 (2023): 1-10.
+PubMed
+
+Al-Jawadi, Asma A., Zina W. A. Al-Mola, and Raghad A. Al-Jomard.
+“Determinants of maternal and umbilical blood lead levels: a
+cross-sectional study, Mosul, Iraq.” BMC Research Notes 2 (2009): 47.
+DOI
+
+Habibian, Ahmad, Morteza Abyadeh, Mostafa Abyareh, Nader Rahimi
+Kakavandi, Atefeh Habibian, Maliheh Khakpash, and Mahmoud
+Ghazi-Khansari. “Association of maternal lead exposure with the risk of
+preterm: a meta-analysis.” Journal of Maternal-Fetal and Neonatal
+Medicine 35, no. 25 (2022): 7222-7230. PubMed
+
+WHO. “Lead poisoning and health.” World Health Organization fact sheet,
+September 27, 2024. WHO
+
+WHO. “Preterm birth.” World Health Organization fact sheet, May 10,
+2023. WHO
+
+World Bank. “GDP per capita, PPP (current international $).” World
+Development Indicators, accessed April 2026. World Bank
+
+World Bank. “Survival to age 65 (% of cohort).” Gender Data Portal /
+World Development Indicators, accessed April 2026. World Bank
+
+Weidenhamer, Jeffrey D., David C. Bansal, and coauthors. “Lead exposure
+from aluminum cookware in Cameroon.” Science of the Total Environment
+496 (2014): 339-347.
+
+Weidenhamer, Jeffrey D., David C. Bansal, and coauthors. “Metal
+exposures from source materials for artisanal aluminum cookware.”
+International Journal of Environmental Health Research 32, no. 11
+(2022): 2465-2475.
+
+Romieu, Isabelle, and coauthors. “Lead exposure in Mexican children: the
+effect of ceramic ware.” Journal of Pediatrics 125, no. 1 (1994):
+111-117.

@@ -47,6 +47,12 @@ Policy interpretation:
 
 The Kohl Package is especially sensitive to local practice: the prevalence of leaded maternal and infant kohl, whether infant kohl use affects boys as well as girls, the size of the infant kohl BLL effect and whether infants are reached through facility delivery or early-immunisation catch-up. The economic case is also sensitive to the same general valuation parameters as the Kitchen Package: the BLL-to-IQ relationship, earnings gains per IQ point and discounting.
 
+## Figure A5. Simplified timing pathways for the Kitchen Package
+
+[Insert `figure_a5_kitchen_timing_pathways.png` here]
+
+Figure A5 summarizes the timing assumptions in the Kitchen Package. Calcium supplementation affects child exposure only through reduced maternal blood lead during pregnancy. Safe pot voucher and substitution affect child exposure through prenatal transfer, maternal exposure while nursing, and direct food pathways after complementary feeding begins. Safe child utensils affect child exposure only after complementary feeding begins. The figure is intentionally simplified and should be read together with Appendix Table A1, which states the exact modeled assumptions for each pathway and age window.
+
 ## Notes on figure files
 
 The PNG versions are intended for easy insertion into Word or Google Docs. The PDF versions are vector-style exports suitable for journal production if the submission system accepts PDF figure files.
@@ -61,3 +67,5 @@ Available files:
 - `outputs/figure_a3_kitchen_tornado.pdf`
 - `outputs/figure_a4_kohl_tornado.png`
 - `outputs/figure_a4_kohl_tornado.pdf`
+- `figure_a5_kitchen_timing_pathways.png`
+- `figure_a5_kitchen_timing_pathways.svg`

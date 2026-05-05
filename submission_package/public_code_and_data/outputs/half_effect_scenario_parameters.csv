@@ -1,0 +1,6 @@
+variable,scaled_by,baseline_min,baseline_mode,baseline_max,scenario_min,scenario_mode,scenario_max
+bll_pot_child,0.5,1.0,4.0,10.0,0.5,2.0,5.0
+bll_pot_mother,0.5,0.5,2.0,5.0,0.25,1.0,2.5
+bll_mug_child,0.5,0.5,2.0,6.0,0.25,1.0,3.0
+bll_maternal_kohl_mother,0.5,0.5,2.0,5.0,0.25,1.0,2.5
+bll_infant_kohl_child,0.5,1.5,5.0,10.0,0.75,2.5,5.0

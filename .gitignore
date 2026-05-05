@@ -7,3 +7,15 @@ __pycache__/
 ~$*.pptx
 .DS_Store
 Thumbs.db
+qa/
+archive/
+submission_package/archive/
+*_regen.docx
+appendix_parameter_citations.md
+appendix_rewrite.md
+change_impact_log.md
+decisions_to_revisit.md
+manuscript_rewrite.md
+parameter_audit.md
+parameter_table_working.csv
+results_run_summary.md

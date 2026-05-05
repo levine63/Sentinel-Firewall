@@ -111,6 +111,7 @@ p_att_imm,0.5,0.8,0.95,FALSE,Attendance at immunization contact,UNICEF or WHO im
 p_att_birth,0.4,0.65,0.85,FALSE,Institutional delivery rate,UNICEF institutional delivery benchmarks
 p_att_infant_kohl_contact,0.55,0.8,0.95,FALSE,Infant kohl contact via either facility delivery or early immunization catch-up,Union of correlated infant contacts based on UNICEF delivery and immunization benchmarks
 fetal_transfer_coeff,0.7,0.8,0.95,FALSE,Fraction of maternal lead reduction transmitted to fetal lead reduction,Inferred from maternal-cord lead relationship
+lactational_transfer_coeff,0.1,0.2,0.35,FALSE,Fraction of maternal lead reduction transmitted to the breastfed infant in the milk-dominated first year,Structural bridge from maternal blood lead to early-infancy exposure
 share_prenatal_last4m,0.2,0.3,0.4,FALSE,Share of developmental cognitive harm attributed to the last four months in utero,Timing-weight assumption informed by prenatal lead literature
 share_year1,0.2,0.3,0.4,FALSE,Share of developmental cognitive harm attributed to the first year of life,Timing-weight assumption informed by infancy lead literature
 prev_pot,0.5,0.75,0.9,FALSE,Unsafe pot prevalence among target households,Hotspot prevalence assumption with improved sentinel targeting
@@ -131,7 +132,7 @@ gp_coresidence_prob,0.2,0.5,0.7,FALSE,Probability grandparent coresides,DHS or h
 bll_pot_child,1,4,10,FALSE,Child BLL reduction from pot if fully effective during active use,Widened synthesis assumption from cookware exposure evidence
 bll_pot_mother,0.5,2,5,FALSE,Mother BLL reduction from pot if fully effective during active use,Widened synthesis assumption from cookware exposure evidence
 bll_mug_child,0.5,2,6,FALSE,Child BLL reduction from mug or spoon if fully effective during active use,Informed extrapolation with widened uncertainty
-bll_calc_mother,0.5,1.2,2,FALSE,Mother BLL reduction from calcium if fully effective,Ettinger et al. 2009
+bll_calc_mother,0.2,0.4,1.2,FALSE,Mother BLL reduction from calcium if fully effective,Ettinger et al. 2009
 bll_maternal_kohl_mother,0.5,2,5,FALSE,Mother BLL reduction from safe maternal kohl if fully effective,Widened synthesized kohl evidence
 bll_infant_kohl_child,1.5,5,10,FALSE,Child BLL reduction from safe infant kohl if fully effective during active use,Widened synthesized kohl evidence
 cost_pot_direct,8,12,15,TRUE,Direct product cost of lead-safe pot,Program design costing
@@ -178,6 +179,7 @@ PROBABILITY_PARAMS = [
     "p_att_birth",
     "p_att_infant_kohl_contact",
     "fetal_transfer_coeff",
+    "lactational_transfer_coeff",
     "share_prenatal_last4m",
     "share_year1",
     "prev_pot",
@@ -401,7 +403,7 @@ def add_common_economic_fields(p):
     return productivity, pv_earnings, fixed_cost_per_birth, vsly
 
 
-def postnatal_cog_weight(duration_years, share_year1, share_years2to5):
+def postnatal_cog_weight(duration_years, share_year1, share_years2to5, start_offset_years=0.0):
     """Map a postnatal pathway duration into developmental-harm weights.
 
     Assumption:
@@ -409,8 +411,11 @@ def postnatal_cog_weight(duration_years, share_year1, share_years2to5):
     - Years 2 to 5 share the remaining postnatal developmental weight evenly.
     """
 
-    covered_year1 = np.clip(duration_years, 0, 1)
-    covered_years2to5 = np.clip(duration_years - 1, 0, 4)
+    effective_duration = np.clip(duration_years, 0, None)
+    year1_window = np.clip(1.0 - start_offset_years, 0, 1)
+    covered_year1 = np.clip(effective_duration, 0, year1_window)
+    remaining_duration = np.clip(effective_duration - covered_year1, 0, None)
+    covered_years2to5 = np.clip(remaining_duration, 0, 4)
     return share_year1 * covered_year1 + share_years2to5 * (covered_years2to5 / 4.0)
 
 
@@ -438,13 +443,15 @@ def simulate_kitchen(p):
     eff_bll_utensils_child = p["bll_mug_child"] * p_utensils
 
     prenatal_child_bll = p["fetal_transfer_coeff"] * (eff_bll_pot_mother + eff_bll_calc_mother)
-    total_child_bll = eff_bll_pot_child + eff_bll_utensils_child + prenatal_child_bll
+    lactational_child_bll = p["lactational_transfer_coeff"] * eff_bll_pot_mother
+    total_child_bll = eff_bll_pot_child + eff_bll_utensils_child + prenatal_child_bll + lactational_child_bll
     child_bll_cog_equiv = (
         prenatal_child_bll * p["share_prenatal_last4m"]
+        + lactational_child_bll * p["share_year1"] * np.clip(p["years_pot"], 0, 1)
         + eff_bll_pot_child
-        * postnatal_cog_weight(p["years_pot"], p["share_year1"], p["share_years2to5"])
+        * postnatal_cog_weight(p["years_pot"], p["share_year1"], p["share_years2to5"], start_offset_years=0.5)
         + eff_bll_utensils_child
-        * postnatal_cog_weight(p["years_utensils"], p["share_year1"], p["share_years2to5"])
+        * postnatal_cog_weight(p["years_utensils"], p["share_year1"], p["share_years2to5"], start_offset_years=0.5)
     )
     delta_iq = child_bll_cog_equiv * p["iq_per_bll"]
     ben_earnings = pv_earnings * p["earn_per_iq"] * delta_iq
@@ -513,6 +520,7 @@ def simulate_kitchen(p):
             "eff_bll_calcium_mother": eff_bll_calc_mother,
             "eff_bll_utensils_child": eff_bll_utensils_child,
             "eff_bll_prenatal_child": prenatal_child_bll,
+            "eff_bll_lactational_child": lactational_child_bll,
             "eff_bll_child_total": total_child_bll,
             "eff_bll_child_cog_equiv": child_bll_cog_equiv,
             "delta_iq": delta_iq,
@@ -546,9 +554,11 @@ def simulate_kohl(p, infant_kohl_multiplier=None):
     eff_bll_kohl_mother = p["bll_maternal_kohl_mother"] * p_maternal
     eff_bll_kohl_infant = infant_kohl_multiplier * p["bll_infant_kohl_child"] * p_infant
     prenatal_child_bll = p["fetal_transfer_coeff"] * eff_bll_kohl_mother
-    total_child_bll = prenatal_child_bll + eff_bll_kohl_infant
+    lactational_child_bll = p["lactational_transfer_coeff"] * eff_bll_kohl_mother
+    total_child_bll = prenatal_child_bll + lactational_child_bll + eff_bll_kohl_infant
     child_bll_cog_equiv = (
         prenatal_child_bll * p["share_prenatal_last4m"]
+        + lactational_child_bll * p["share_year1"] * np.clip(p["years_kohl_maternal"], 0, 1)
         + eff_bll_kohl_infant
         * postnatal_cog_weight(p["years_kohl_infant"], p["share_year1"], p["share_years2to5"])
     )
@@ -558,7 +568,13 @@ def simulate_kohl(p, infant_kohl_multiplier=None):
     cost = np.array(fixed_cost_per_birth, copy=True)
     cost += p["cost_explain"] * p["p_att_anc"]
     cost += p["cost_dist_light"] * (1 + p["logistics_markup"]) * p["p_att_anc"] * p["fidelity"]
-    cost += p["cost_kohl_maternal_direct"] * (1 + p["logistics_markup"]) * p["p_att_anc"] * p["fidelity"]
+    cost += (
+        p["cost_kohl_maternal_direct"]
+        * np.clip(p["years_kohl_maternal"], 0, None)
+        * (1 + p["logistics_markup"])
+        * p["p_att_anc"]
+        * p["fidelity"]
+    )
     cost += p["cost_explain"] * p["p_att_infant_kohl_contact"]
     cost += (
         p["cost_dist_light"]
@@ -609,6 +625,7 @@ def simulate_kohl(p, infant_kohl_multiplier=None):
             "eff_bll_kohl_mother": eff_bll_kohl_mother,
             "eff_bll_kohl_infant": eff_bll_kohl_infant,
             "eff_bll_prenatal_child": prenatal_child_bll,
+            "eff_bll_lactational_child": lactational_child_bll,
             "eff_bll_child_total": total_child_bll,
             "eff_bll_child_cog_equiv": child_bll_cog_equiv,
             "delta_iq": delta_iq,
@@ -633,6 +650,173 @@ def summarize_results(df, bcr_col):
         "p5": float(series.quantile(0.05)),
         "p95": float(series.quantile(0.95)),
         "fail_pct": float((series < 1).mean() * 100),
+    }
+
+
+def summarize_case(name, df):
+    cog = summarize_results(df, "bcr_cog")
+    total = summarize_results(df, "bcr_total")
+    return {
+        "package_case": name,
+        "bcr_cog_median": cog["median"],
+        "bcr_cog_p5": cog["p5"],
+        "bcr_cog_p95": cog["p95"],
+        "bcr_cog_fail_pct": cog["fail_pct"],
+        "bcr_total_median": total["median"],
+        "bcr_total_p5": total["p5"],
+        "bcr_total_p95": total["p95"],
+        "bcr_total_fail_pct": total["fail_pct"],
+    }
+
+
+def scale_param_block(param_table, names, scale):
+    updated = param_table.copy(deep=True)
+    for name in names:
+        for col in ["min", "mode", "max"]:
+            updated.loc[name, col] = float(updated.loc[name, col]) * scale
+    return updated
+
+
+def export_disadvantaged_scenario(output_dir):
+    scenario_params = [
+        "gdp_ppp_per_capita",
+        "growth",
+        "p_att_anc",
+        "fidelity",
+        "p_merchant_stock",
+        "p_redeem",
+        "adherence",
+    ]
+    scale = 0.7
+    baseline_rows = [
+        summarize_case("Kitchen Baseline", simulate_kitchen(draw_params(seed=RNG_SEED))),
+        summarize_case("Kohl Baseline", simulate_kohl(draw_params(seed=RNG_SEED + 2))),
+    ]
+    original_params = PARAMS.copy(deep=True)
+    try:
+        globals()["PARAMS"] = scale_param_block(PARAMS, scenario_params, scale)
+        scenario_rows = [
+            summarize_case("Kitchen Disadvantaged Setting", simulate_kitchen(draw_params(seed=RNG_SEED))),
+            summarize_case("Kohl Disadvantaged Setting", simulate_kohl(draw_params(seed=RNG_SEED + 2))),
+        ]
+    finally:
+        globals()["PARAMS"] = original_params
+    baseline = pd.DataFrame(baseline_rows).set_index("package_case")
+    scenario = pd.DataFrame(scenario_rows).set_index("package_case")
+    comparison = pd.DataFrame(
+        [
+            {
+                "package": "Kitchen",
+                "baseline_bcr_cog_median": baseline.loc["Kitchen Baseline", "bcr_cog_median"],
+                "scenario_bcr_cog_median": scenario.loc["Kitchen Disadvantaged Setting", "bcr_cog_median"],
+                "pct_change_bcr_cog_median": (scenario.loc["Kitchen Disadvantaged Setting", "bcr_cog_median"] / baseline.loc["Kitchen Baseline", "bcr_cog_median"] - 1) * 100,
+                "baseline_bcr_total_median": baseline.loc["Kitchen Baseline", "bcr_total_median"],
+                "scenario_bcr_total_median": scenario.loc["Kitchen Disadvantaged Setting", "bcr_total_median"],
+                "pct_change_bcr_total_median": (scenario.loc["Kitchen Disadvantaged Setting", "bcr_total_median"] / baseline.loc["Kitchen Baseline", "bcr_total_median"] - 1) * 100,
+                "baseline_fail_pct_total": baseline.loc["Kitchen Baseline", "bcr_total_fail_pct"],
+                "scenario_fail_pct_total": scenario.loc["Kitchen Disadvantaged Setting", "bcr_total_fail_pct"],
+            },
+            {
+                "package": "Kohl",
+                "baseline_bcr_cog_median": baseline.loc["Kohl Baseline", "bcr_cog_median"],
+                "scenario_bcr_cog_median": scenario.loc["Kohl Disadvantaged Setting", "bcr_cog_median"],
+                "pct_change_bcr_cog_median": (scenario.loc["Kohl Disadvantaged Setting", "bcr_cog_median"] / baseline.loc["Kohl Baseline", "bcr_cog_median"] - 1) * 100,
+                "baseline_bcr_total_median": baseline.loc["Kohl Baseline", "bcr_total_median"],
+                "scenario_bcr_total_median": scenario.loc["Kohl Disadvantaged Setting", "bcr_total_median"],
+                "pct_change_bcr_total_median": (scenario.loc["Kohl Disadvantaged Setting", "bcr_total_median"] / baseline.loc["Kohl Baseline", "bcr_total_median"] - 1) * 100,
+                "baseline_fail_pct_total": baseline.loc["Kohl Baseline", "bcr_total_fail_pct"],
+                "scenario_fail_pct_total": scenario.loc["Kohl Disadvantaged Setting", "bcr_total_fail_pct"],
+            },
+        ]
+    )
+    parameter_compare = (
+        original_params.loc[scenario_params, ["min", "mode", "max"]]
+        .rename(columns=lambda c: f"baseline_{c}")
+        .join(
+            scale_param_block(original_params, scenario_params, scale)
+            .loc[scenario_params, ["min", "mode", "max"]]
+            .rename(columns={"min": "scenario_min", "mode": "scenario_mode", "max": "scenario_max"})
+        )
+    )
+    parameter_compare.insert(0, "scaled_by", scale)
+    pd.DataFrame(baseline_rows + scenario_rows).to_csv(output_dir / "summary_table_with_disadvantaged_scenario.csv", index=False)
+    comparison.to_csv(output_dir / "disadvantaged_scenario_comparison.csv", index=False)
+    parameter_compare.to_csv(output_dir / "disadvantaged_scenario_parameters.csv")
+
+
+def export_half_effect_scenario(output_dir):
+    scenario_params = [
+        "bll_pot_child",
+        "bll_pot_mother",
+        "bll_mug_child",
+        "bll_maternal_kohl_mother",
+        "bll_infant_kohl_child",
+    ]
+    scale = 0.5
+    baseline_rows = [
+        summarize_case("Kitchen Baseline", simulate_kitchen(draw_params(seed=RNG_SEED))),
+        summarize_case("Kohl Baseline", simulate_kohl(draw_params(seed=RNG_SEED + 2))),
+    ]
+    original_params = PARAMS.copy(deep=True)
+    try:
+        globals()["PARAMS"] = scale_param_block(PARAMS, scenario_params, scale)
+        scenario_rows = [
+            summarize_case("Kitchen Half Pot-Utensil Effect", simulate_kitchen(draw_params(seed=RNG_SEED))),
+            summarize_case("Kohl Half Kohl Effect", simulate_kohl(draw_params(seed=RNG_SEED + 2))),
+        ]
+    finally:
+        globals()["PARAMS"] = original_params
+    baseline = pd.DataFrame(baseline_rows).set_index("package_case")
+    scenario = pd.DataFrame(scenario_rows).set_index("package_case")
+    comparison = pd.DataFrame(
+        [
+            {
+                "package": "Kitchen",
+                "baseline_bcr_cog_median": baseline.loc["Kitchen Baseline", "bcr_cog_median"],
+                "scenario_bcr_cog_median": scenario.loc["Kitchen Half Pot-Utensil Effect", "bcr_cog_median"],
+                "pct_change_bcr_cog_median": (scenario.loc["Kitchen Half Pot-Utensil Effect", "bcr_cog_median"] / baseline.loc["Kitchen Baseline", "bcr_cog_median"] - 1) * 100,
+                "baseline_bcr_total_median": baseline.loc["Kitchen Baseline", "bcr_total_median"],
+                "scenario_bcr_total_median": scenario.loc["Kitchen Half Pot-Utensil Effect", "bcr_total_median"],
+                "pct_change_bcr_total_median": (scenario.loc["Kitchen Half Pot-Utensil Effect", "bcr_total_median"] / baseline.loc["Kitchen Baseline", "bcr_total_median"] - 1) * 100,
+                "baseline_fail_pct_total": baseline.loc["Kitchen Baseline", "bcr_total_fail_pct"],
+                "scenario_fail_pct_total": scenario.loc["Kitchen Half Pot-Utensil Effect", "bcr_total_fail_pct"],
+            },
+            {
+                "package": "Kohl",
+                "baseline_bcr_cog_median": baseline.loc["Kohl Baseline", "bcr_cog_median"],
+                "scenario_bcr_cog_median": scenario.loc["Kohl Half Kohl Effect", "bcr_cog_median"],
+                "pct_change_bcr_cog_median": (scenario.loc["Kohl Half Kohl Effect", "bcr_cog_median"] / baseline.loc["Kohl Baseline", "bcr_cog_median"] - 1) * 100,
+                "baseline_bcr_total_median": baseline.loc["Kohl Baseline", "bcr_total_median"],
+                "scenario_bcr_total_median": scenario.loc["Kohl Half Kohl Effect", "bcr_total_median"],
+                "pct_change_bcr_total_median": (scenario.loc["Kohl Half Kohl Effect", "bcr_total_median"] / baseline.loc["Kohl Baseline", "bcr_total_median"] - 1) * 100,
+                "baseline_fail_pct_total": baseline.loc["Kohl Baseline", "bcr_total_fail_pct"],
+                "scenario_fail_pct_total": scenario.loc["Kohl Half Kohl Effect", "bcr_total_fail_pct"],
+            },
+        ]
+    )
+    parameter_compare = (
+        original_params.loc[scenario_params, ["min", "mode", "max"]]
+        .rename(columns=lambda c: f"baseline_{c}")
+        .join(
+            scale_param_block(original_params, scenario_params, scale)
+            .loc[scenario_params, ["min", "mode", "max"]]
+            .rename(columns={"min": "scenario_min", "mode": "scenario_mode", "max": "scenario_max"})
+        )
+    )
+    parameter_compare.insert(0, "scaled_by", scale)
+    pd.DataFrame(baseline_rows + scenario_rows).to_csv(output_dir / "summary_table_with_half_effect_scenario.csv", index=False)
+    comparison.to_csv(output_dir / "half_effect_scenario_comparison.csv", index=False)
+    parameter_compare.to_csv(output_dir / "half_effect_scenario_parameters.csv")
+
+
+def modal_policy_scale_outputs(df_mode, births=1_000_000):
+    row = df_mode.iloc[0]
+    total_benefit = float(row["benefit_earnings"] + row["benefit_maternal_neonatal"] + row["benefit_cvd"])
+    total_cost = float(row["cost"])
+    return {
+        "modal_cost_per_1m_births_usd": total_cost * births,
+        "modal_total_benefit_per_1m_births_usd": total_benefit * births,
+        "modal_net_benefit_per_1m_births_usd": (total_benefit - total_cost) * births,
     }
 
 
@@ -912,6 +1096,21 @@ def nonlinear_background_robustness(package, other_mean, other_sd, n_draws=50000
     }
 
 
+def nonlinear_background_bcr_trials(package, other_mean, other_sd, seed=RNG_SEED):
+    p = draw_params(seed=seed if package == "kitchen" else seed + 2)
+    base_df = simulate_kitchen(p) if package == "kitchen" else simulate_kohl(p)
+    mu, sigma = lognormal_params_from_mean_sd(other_mean, other_sd)
+    rng = np.random.default_rng(seed + (11 if package == "kitchen" else 12))
+    other_sources = rng.lognormal(mean=mu, sigma=sigma, size=len(base_df))
+    delta_iq = nonlinear_iq_gain(
+        NONLINEAR_BETA,
+        other_sources + base_df["eff_bll_child_cog_equiv"].to_numpy(),
+        other_sources,
+    )
+    benefit_earnings = base_df["pv_earnings"].to_numpy() * p["earn_per_iq"] * delta_iq
+    return pd.Series(benefit_earnings / base_df["cost"].to_numpy())
+
+
 def adult_spillover_robustness(package, spillover_share=0.5):
     p = mode_params()
     if package == "kitchen":
@@ -950,6 +1149,37 @@ def adult_spillover_robustness(package, spillover_share=0.5):
         "spillover_cvd_benefit": base_cvd + extra_cvd,
         "cvd_multiplier": (base_cvd + extra_cvd) / base_cvd if base_cvd > 0 else np.nan,
     }
+
+
+def adult_spillover_total_bcr_trials(package, spillover_share=0.5, seed=RNG_SEED):
+    p = draw_params(seed=seed if package == "kitchen" else seed + 2)
+    base_df = simulate_kitchen(p) if package == "kitchen" else simulate_kohl(p)
+    _, _, _, vsly = add_common_economic_fields(p)
+    if package == "kitchen":
+        extra_cvd = (
+            base_df["eff_bll_pot_mother"].to_numpy()
+            * p["years_pot"]
+            * p["cvd_daly_per_ug_lifetime"]
+            * vsly
+            * np.power(1 + p["discount"], -np.maximum(0, p["adult_reference_years"] - p["mom_age"]))
+            * spillover_share
+        )
+    else:
+        extra_cvd = (
+            base_df["eff_bll_kohl_mother"].to_numpy()
+            * p["years_kohl_maternal"]
+            * p["cvd_daly_per_ug_lifetime"]
+            * vsly
+            * np.power(1 + p["discount"], -np.maximum(0, p["adult_reference_years"] - p["mom_age"]))
+            * spillover_share
+        )
+    total_benefit = (
+        base_df["benefit_earnings"].to_numpy()
+        + base_df["benefit_maternal_neonatal"].to_numpy()
+        + base_df["benefit_cvd"].to_numpy()
+        + extra_cvd
+    )
+    return pd.Series(total_benefit / base_df["cost"].to_numpy())
 
 
 def example_nonlinear_iq_steps():
@@ -992,6 +1222,127 @@ def kohl_girls_only_robustness(p, kohl_all_infants):
             }
         )
     return pd.DataFrame(rows), kohl_mothers_girls
+
+
+def scaled_scenario_trials(package, scenario_params, scale, seed=RNG_SEED):
+    original_params = PARAMS.copy(deep=True)
+    try:
+        globals()["PARAMS"] = scale_param_block(PARAMS, scenario_params, scale)
+        if package == "kitchen":
+            return simulate_kitchen(draw_params(seed=seed))
+        return simulate_kohl(draw_params(seed=seed + 2))
+    finally:
+        globals()["PARAMS"] = original_params
+
+
+def export_robustness_distribution_summary(output_dir):
+    rows = []
+
+    def add_row(check_name, package, bcr_type, series):
+        stats = summarize_results(pd.DataFrame({"metric": series}), "metric")
+        rows.append(
+            {
+                "check": check_name,
+                "package": package,
+                "bcr_type": bcr_type,
+                "median": stats["median"],
+                "p5": stats["p5"],
+                "p95": stats["p95"],
+                "fail_pct": stats["fail_pct"],
+            }
+        )
+
+    add_row(
+        "Adult spillover (+1 adult in half of recipient households)",
+        "Kitchen",
+        "total",
+        adult_spillover_total_bcr_trials("kitchen", spillover_share=0.5),
+    )
+    add_row(
+        "Adult spillover (+1 adult in half of recipient households)",
+        "Kohl",
+        "total",
+        adult_spillover_total_bcr_trials("kohl", spillover_share=0.5),
+    )
+
+    add_row(
+        "Low-background nonlinear BLL (other-source mean 3, SD 1.5)",
+        "Kitchen",
+        "cognition",
+        nonlinear_background_bcr_trials("kitchen", other_mean=3.0, other_sd=1.5),
+    )
+    add_row(
+        "Low-background nonlinear BLL (other-source mean 3, SD 1.5)",
+        "Kohl",
+        "cognition",
+        nonlinear_background_bcr_trials("kohl", other_mean=3.0, other_sd=1.5),
+    )
+    add_row(
+        "High-background nonlinear BLL (other-source mean 7, SD 3.5)",
+        "Kitchen",
+        "cognition",
+        nonlinear_background_bcr_trials("kitchen", other_mean=7.0, other_sd=3.5),
+    )
+    add_row(
+        "High-background nonlinear BLL (other-source mean 7, SD 3.5)",
+        "Kohl",
+        "cognition",
+        nonlinear_background_bcr_trials("kohl", other_mean=7.0, other_sd=3.5),
+    )
+
+    disadvantaged_params = [
+        "gdp_ppp_per_capita",
+        "growth",
+        "p_att_anc",
+        "fidelity",
+        "p_merchant_stock",
+        "p_redeem",
+        "adherence",
+    ]
+    add_row(
+        "Disadvantaged implementation setting",
+        "Kitchen",
+        "total",
+        scaled_scenario_trials("kitchen", disadvantaged_params, 0.7)["bcr_total"],
+    )
+    add_row(
+        "Disadvantaged implementation setting",
+        "Kohl",
+        "total",
+        scaled_scenario_trials("kohl", disadvantaged_params, 0.7)["bcr_total"],
+    )
+
+    half_effect_params = [
+        "bll_pot_child",
+        "bll_pot_mother",
+        "bll_mug_child",
+        "bll_maternal_kohl_mother",
+        "bll_infant_kohl_child",
+    ]
+    add_row(
+        "Half cookware and kohl effect sizes",
+        "Kitchen",
+        "total",
+        scaled_scenario_trials("kitchen", half_effect_params, 0.5)["bcr_total"],
+    )
+    add_row(
+        "Half cookware and kohl effect sizes",
+        "Kohl",
+        "total",
+        scaled_scenario_trials("kohl", half_effect_params, 0.5)["bcr_total"],
+    )
+
+    p = draw_params(seed=RNG_SEED + 2)
+    _, kohl_mothers_girls_trials = kohl_girls_only_robustness(p, simulate_kohl(p))
+    add_row(
+        "Kohl girls-only infant substitution",
+        "Kohl",
+        "total",
+        kohl_mothers_girls_trials["bcr_total"],
+    )
+
+    pd.DataFrame(rows).to_csv(output_dir / "robustness_distribution_summary.csv", index=False)
+
 
 
 def export_modes_workbook(output_dir):
@@ -1191,6 +1542,7 @@ def export_reader_deterministic_workbook(output_dir):
         "p_att_birth": ("Institutional delivery contact", "Probability"),
         "p_att_infant_kohl_contact": ("Infant kohl contact through facility delivery or early immunization", "Probability"),
         "fetal_transfer_coeff": ("Maternal-to-fetal lead reduction transfer", "Share"),
+        "lactational_transfer_coeff": ("Maternal-to-infant transfer during the milk-dominated first year", "Share"),
         "share_prenatal_last4m": ("Share of cognitive harm in last four months in utero", "Share"),
         "share_year1": ("Share of cognitive harm in year 1", "Share"),
         "prev_pot": ("Unsafe pot prevalence in targeted households", "Share"),
@@ -1282,6 +1634,7 @@ def export_reader_deterministic_workbook(output_dir):
         "district_fixed_cost": ("Prices and overhead", "Good local input"),
         "district_births": ("Prices and overhead", "Good local input"),
         "fetal_transfer_coeff": ("Scientific and valuation parameters", "Change cautiously"),
+        "lactational_transfer_coeff": ("Scientific and valuation parameters", "Change cautiously"),
         "share_prenatal_last4m": ("Scientific and valuation parameters", "Change cautiously"),
         "share_year1": ("Scientific and valuation parameters", "Change cautiously"),
         "iq_per_bll": ("Scientific and valuation parameters", "Change cautiously"),
@@ -1570,13 +1923,13 @@ def export_reader_deterministic_workbook(output_dir):
     )
     add_calc(
         "post_weight_pot",
-        f"={ref_default('share_year1')}*MIN({ref_default('years_pot')},1)+B{rows['share_years2to5']}*(MIN(MAX({ref_default('years_pot')}-1,0),4)/4)",
-        f"={ref_local('share_year1')}*MIN({ref_local('years_pot')},1)+C{rows['share_years2to5']}*(MIN(MAX({ref_local('years_pot')}-1,0),4)/4)",
+        f"={ref_default('share_year1')}*MIN({ref_default('years_pot')},0.5)+B{rows['share_years2to5']}*(MIN(MAX({ref_default('years_pot')}-0.5,0),4)/4)",
+        f"={ref_local('share_year1')}*MIN({ref_local('years_pot')},0.5)+C{rows['share_years2to5']}*(MIN(MAX({ref_local('years_pot')}-0.5,0),4)/4)",
     )
     add_calc(
         "post_weight_utensils",
-        f"={ref_default('share_year1')}*MIN({ref_default('years_utensils')},1)+B{rows['share_years2to5']}*(MIN(MAX({ref_default('years_utensils')}-1,0),4)/4)",
-        f"={ref_local('share_year1')}*MIN({ref_local('years_utensils')},1)+C{rows['share_years2to5']}*(MIN(MAX({ref_local('years_utensils')}-1,0),4)/4)",
+        f"={ref_default('share_year1')}*MIN({ref_default('years_utensils')},0.5)+B{rows['share_years2to5']}*(MIN(MAX({ref_default('years_utensils')}-0.5,0),4)/4)",
+        f"={ref_local('share_year1')}*MIN({ref_local('years_utensils')},0.5)+C{rows['share_years2to5']}*(MIN(MAX({ref_local('years_utensils')}-0.5,0),4)/4)",
     )
     add_calc(
         "post_weight_kohl_infant",
@@ -1632,14 +1985,19 @@ def export_reader_deterministic_workbook(output_dir):
         f"={ref_local('fetal_transfer_coeff')}*(C{rows['k_eff_bll_pot_mother']}+C{rows['k_eff_bll_calcium_mother']})",
     )
     add_calc(
+        "k_eff_bll_lactational_child",
+        f"={ref_default('lactational_transfer_coeff')}*B{rows['k_eff_bll_pot_mother']}",
+        f"={ref_local('lactational_transfer_coeff')}*C{rows['k_eff_bll_pot_mother']}",
+    )
+    add_calc(
         "k_eff_bll_child_total",
-        f"=B{rows['k_eff_bll_pot_child']}+B{rows['k_eff_bll_utensils_child']}+B{rows['k_eff_bll_prenatal_child']}",
-        f"=C{rows['k_eff_bll_pot_child']}+C{rows['k_eff_bll_utensils_child']}+C{rows['k_eff_bll_prenatal_child']}",
+        f"=B{rows['k_eff_bll_pot_child']}+B{rows['k_eff_bll_utensils_child']}+B{rows['k_eff_bll_prenatal_child']}+B{rows['k_eff_bll_lactational_child']}",
+        f"=C{rows['k_eff_bll_pot_child']}+C{rows['k_eff_bll_utensils_child']}+C{rows['k_eff_bll_prenatal_child']}+C{rows['k_eff_bll_lactational_child']}",
     )
     add_calc(
         "k_eff_bll_child_cog_equiv",
-        f"=B{rows['k_eff_bll_prenatal_child']}*{ref_default('share_prenatal_last4m')}+B{rows['k_eff_bll_pot_child']}*B{rows['post_weight_pot']}+B{rows['k_eff_bll_utensils_child']}*B{rows['post_weight_utensils']}",
-        f"=C{rows['k_eff_bll_prenatal_child']}*{ref_local('share_prenatal_last4m')}+C{rows['k_eff_bll_pot_child']}*C{rows['post_weight_pot']}+C{rows['k_eff_bll_utensils_child']}*C{rows['post_weight_utensils']}",
+        f"=B{rows['k_eff_bll_prenatal_child']}*{ref_default('share_prenatal_last4m')}+B{rows['k_eff_bll_lactational_child']}*{ref_default('share_year1')}*MIN({ref_default('years_pot')},1)+B{rows['k_eff_bll_pot_child']}*B{rows['post_weight_pot']}+B{rows['k_eff_bll_utensils_child']}*B{rows['post_weight_utensils']}",
+        f"=C{rows['k_eff_bll_prenatal_child']}*{ref_local('share_prenatal_last4m')}+C{rows['k_eff_bll_lactational_child']}*{ref_local('share_year1')}*MIN({ref_local('years_pot')},1)+C{rows['k_eff_bll_pot_child']}*C{rows['post_weight_pot']}+C{rows['k_eff_bll_utensils_child']}*C{rows['post_weight_utensils']}",
     )
     add_calc(
         "k_delta_iq",
@@ -1687,15 +2045,16 @@ def export_reader_deterministic_workbook(output_dir):
     add_calc("ko_eff_bll_mother", f"={ref_default('bll_maternal_kohl_mother')}*B{rows['ko_p_success_maternal']}", f"={ref_local('bll_maternal_kohl_mother')}*C{rows['ko_p_success_maternal']}")
     add_calc("ko_eff_bll_infant", f"={ref_default('bll_infant_kohl_child')}*B{rows['ko_p_success_infant']}", f"={ref_local('bll_infant_kohl_child')}*C{rows['ko_p_success_infant']}")
     add_calc("ko_eff_bll_prenatal_child", f"={ref_default('fetal_transfer_coeff')}*B{rows['ko_eff_bll_mother']}", f"={ref_local('fetal_transfer_coeff')}*C{rows['ko_eff_bll_mother']}")
-    add_calc("ko_eff_bll_child_total", f"=B{rows['ko_eff_bll_prenatal_child']}+B{rows['ko_eff_bll_infant']}", f"=C{rows['ko_eff_bll_prenatal_child']}+C{rows['ko_eff_bll_infant']}")
-    add_calc("ko_eff_bll_child_cog_equiv", f"=B{rows['ko_eff_bll_prenatal_child']}*{ref_default('share_prenatal_last4m')}+B{rows['ko_eff_bll_infant']}*B{rows['post_weight_kohl_infant']}", f"=C{rows['ko_eff_bll_prenatal_child']}*{ref_local('share_prenatal_last4m')}+C{rows['ko_eff_bll_infant']}*C{rows['post_weight_kohl_infant']}")
+    add_calc("ko_eff_bll_lactational_child", f"={ref_default('lactational_transfer_coeff')}*B{rows['ko_eff_bll_mother']}", f"={ref_local('lactational_transfer_coeff')}*C{rows['ko_eff_bll_mother']}")
+    add_calc("ko_eff_bll_child_total", f"=B{rows['ko_eff_bll_prenatal_child']}+B{rows['ko_eff_bll_lactational_child']}+B{rows['ko_eff_bll_infant']}", f"=C{rows['ko_eff_bll_prenatal_child']}+C{rows['ko_eff_bll_lactational_child']}+C{rows['ko_eff_bll_infant']}")
+    add_calc("ko_eff_bll_child_cog_equiv", f"=B{rows['ko_eff_bll_prenatal_child']}*{ref_default('share_prenatal_last4m')}+B{rows['ko_eff_bll_lactational_child']}*{ref_default('share_year1')}*MIN({ref_default('years_kohl_maternal')},1)+B{rows['ko_eff_bll_infant']}*B{rows['post_weight_kohl_infant']}", f"=C{rows['ko_eff_bll_prenatal_child']}*{ref_local('share_prenatal_last4m')}+C{rows['ko_eff_bll_lactational_child']}*{ref_local('share_year1')}*MIN({ref_local('years_kohl_maternal')},1)+C{rows['ko_eff_bll_infant']}*C{rows['post_weight_kohl_infant']}")
     add_calc("ko_delta_iq", f"=B{rows['ko_eff_bll_child_cog_equiv']}*{ref_default('iq_per_bll')}", f"=C{rows['ko_eff_bll_child_cog_equiv']}*{ref_local('iq_per_bll')}")
     add_calc("ko_benefit_earnings", f"=B{rows['pv_earnings']}*{ref_default('earn_per_iq')}*B{rows['ko_delta_iq']}", f"=C{rows['pv_earnings']}*{ref_local('earn_per_iq')}*C{rows['ko_delta_iq']}")
     add_calc("ko_preeclampsia_delta", f"={ref_default('preeclampsia_base_prev')}-(({ref_default('preeclampsia_base_prev')}/(1-{ref_default('preeclampsia_base_prev')}))/POWER({ref_default('preeclampsia_or')},B{rows['ko_eff_bll_mother']}*{ref_default('preeclampsia_timing_mult')}))/(1+(({ref_default('preeclampsia_base_prev')}/(1-{ref_default('preeclampsia_base_prev')}))/POWER({ref_default('preeclampsia_or')},B{rows['ko_eff_bll_mother']}*{ref_default('preeclampsia_timing_mult')})))", f"={ref_local('preeclampsia_base_prev')}-(({ref_local('preeclampsia_base_prev')}/(1-{ref_local('preeclampsia_base_prev')}))/POWER({ref_local('preeclampsia_or')},C{rows['ko_eff_bll_mother']}*{ref_local('preeclampsia_timing_mult')}))/(1+(({ref_local('preeclampsia_base_prev')}/(1-{ref_local('preeclampsia_base_prev')}))/POWER({ref_local('preeclampsia_or')},C{rows['ko_eff_bll_mother']}*{ref_local('preeclampsia_timing_mult')})))")
     add_calc("ko_preterm_delta", f"={ref_default('preterm_base_prev')}-(({ref_default('preterm_base_prev')}/(1-{ref_default('preterm_base_prev')}))/POWER({ref_default('preterm_or')},B{rows['ko_eff_bll_mother']}*{ref_default('preterm_timing_mult')}))/(1+(({ref_default('preterm_base_prev')}/(1-{ref_default('preterm_base_prev')}))/POWER({ref_default('preterm_or')},B{rows['ko_eff_bll_mother']}*{ref_default('preterm_timing_mult')})))", f"={ref_local('preterm_base_prev')}-(({ref_local('preterm_base_prev')}/(1-{ref_local('preterm_base_prev')}))/POWER({ref_local('preterm_or')},C{rows['ko_eff_bll_mother']}*{ref_local('preterm_timing_mult')}))/(1+(({ref_local('preterm_base_prev')}/(1-{ref_local('preterm_base_prev')}))/POWER({ref_local('preterm_or')},C{rows['ko_eff_bll_mother']}*{ref_local('preterm_timing_mult')})))")
     add_calc("ko_benefit_maternal_neonatal", f"=B{rows['ko_preeclampsia_delta']}*{ref_default('preeclampsia_daly_wt')}*B{rows['vsly']}+B{rows['ko_preterm_delta']}*{ref_default('neonatal_daly_mult')}*B{rows['vsly']}", f"=C{rows['ko_preeclampsia_delta']}*{ref_local('preeclampsia_daly_wt')}*C{rows['vsly']}+C{rows['ko_preterm_delta']}*{ref_local('neonatal_daly_mult')}*C{rows['vsly']}")
     add_calc("ko_benefit_cvd", f"=B{rows['ko_eff_bll_mother']}*{ref_default('cvd_daly_per_ug_lifetime')}*{ref_default('years_kohl_maternal')}*B{rows['vsly']}*POWER(1+{ref_default('discount')},-MAX(0,{ref_default('adult_reference_years')}-{ref_default('mom_age')}))", f"=C{rows['ko_eff_bll_mother']}*{ref_local('cvd_daly_per_ug_lifetime')}*{ref_local('years_kohl_maternal')}*C{rows['vsly']}*POWER(1+{ref_local('discount')},-MAX(0,{ref_local('adult_reference_years')}-{ref_local('mom_age')}))")
-    add_calc("ko_cost", f"=B{rows['fixed_cost_per_birth']}+{ref_default('cost_explain')}*{ref_default('p_att_anc')}+{ref_default('cost_dist_light')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_anc')}*{ref_default('fidelity')}+{ref_default('cost_kohl_maternal_direct')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_anc')}*{ref_default('fidelity')}+{ref_default('cost_explain')}*{ref_default('p_att_infant_kohl_contact')}+{ref_default('cost_dist_light')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_infant_kohl_contact')}*{ref_default('fidelity')}+{ref_default('cost_kohl_infant_direct')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_infant_kohl_contact')}*{ref_default('fidelity')}", f"=C{rows['fixed_cost_per_birth']}+{ref_local('cost_explain')}*{ref_local('p_att_anc')}+{ref_local('cost_dist_light')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_anc')}*{ref_local('fidelity')}+{ref_local('cost_kohl_maternal_direct')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_anc')}*{ref_local('fidelity')}+{ref_local('cost_explain')}*{ref_local('p_att_infant_kohl_contact')}+{ref_local('cost_dist_light')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_infant_kohl_contact')}*{ref_local('fidelity')}+{ref_local('cost_kohl_infant_direct')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_infant_kohl_contact')}*{ref_local('fidelity')}")
+    add_calc("ko_cost", f"=B{rows['fixed_cost_per_birth']}+{ref_default('cost_explain')}*{ref_default('p_att_anc')}+{ref_default('cost_dist_light')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_anc')}*{ref_default('fidelity')}+{ref_default('cost_kohl_maternal_direct')}*{ref_default('years_kohl_maternal')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_anc')}*{ref_default('fidelity')}+{ref_default('cost_explain')}*{ref_default('p_att_infant_kohl_contact')}+{ref_default('cost_dist_light')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_infant_kohl_contact')}*{ref_default('fidelity')}+{ref_default('cost_kohl_infant_direct')}*(1+{ref_default('logistics_markup')})*{ref_default('p_att_infant_kohl_contact')}*{ref_default('fidelity')}", f"=C{rows['fixed_cost_per_birth']}+{ref_local('cost_explain')}*{ref_local('p_att_anc')}+{ref_local('cost_dist_light')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_anc')}*{ref_local('fidelity')}+{ref_local('cost_kohl_maternal_direct')}*{ref_local('years_kohl_maternal')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_anc')}*{ref_local('fidelity')}+{ref_local('cost_explain')}*{ref_local('p_att_infant_kohl_contact')}+{ref_local('cost_dist_light')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_infant_kohl_contact')}*{ref_local('fidelity')}+{ref_local('cost_kohl_infant_direct')}*(1+{ref_local('logistics_markup')})*{ref_local('p_att_infant_kohl_contact')}*{ref_local('fidelity')}")
     add_calc("ko_bcr_cog", f"=B{rows['ko_benefit_earnings']}/B{rows['ko_cost']}", f"=C{rows['ko_benefit_earnings']}/C{rows['ko_cost']}")
     add_calc("ko_bcr_plus_mn", f"=(B{rows['ko_benefit_earnings']}+B{rows['ko_benefit_maternal_neonatal']})/B{rows['ko_cost']}", f"=(C{rows['ko_benefit_earnings']}+C{rows['ko_benefit_maternal_neonatal']})/C{rows['ko_cost']}")
     add_calc("ko_bcr_total", f"=(B{rows['ko_benefit_earnings']}+B{rows['ko_benefit_maternal_neonatal']}+B{rows['ko_benefit_cvd']})/B{rows['ko_cost']}", f"=(C{rows['ko_benefit_earnings']}+C{rows['ko_benefit_maternal_neonatal']}+C{rows['ko_benefit_cvd']})/C{rows['ko_cost']}")
@@ -1741,6 +2100,8 @@ def run_all(output_dir):
     kitchen_base = simulate_kitchen(draw_params(seed=RNG_SEED))
     kohl_draws = draw_params(seed=RNG_SEED + 2)
     kohl_base = simulate_kohl(kohl_draws)
+    kitchen_mode = simulate_kitchen(mode_params())
+    kohl_mode = simulate_kohl(mode_params())
     kohl_girls_only, kohl_mothers_girls_trials = kohl_girls_only_robustness(kohl_draws, kohl_base)
     validate_results(kitchen_base, "kitchen")
     validate_results(kohl_base, "kohl")
@@ -1763,6 +2124,7 @@ def run_all(output_dir):
     ]:
         cog = summarize_results(df, "bcr_cog")
         total = summarize_results(df, "bcr_total")
+        modal_scale = modal_policy_scale_outputs(kitchen_mode if package_name == "Kitchen Baseline" else kohl_mode)
         summary_rows.append(
             {
                 "package_case": package_name,
@@ -1774,6 +2136,7 @@ def run_all(output_dir):
                 "bcr_total_p5": total["p5"],
                 "bcr_total_p95": total["p95"],
                 "bcr_total_fail_pct": total["fail_pct"],
+                **modal_scale,
             }
         )
 
@@ -1813,6 +2176,9 @@ def run_all(output_dir):
     adult_spillover.to_csv(output_dir / "adult_spillover_robustness.csv", index=False)
 
     example_nonlinear_iq_steps().to_csv(output_dir / "nonlinear_iq_examples.csv", index=False)
+    export_robustness_distribution_summary(output_dir)
+    export_disadvantaged_scenario(output_dir)
+    export_half_effect_scenario(output_dir)
     export_modes_workbook(output_dir)
     reader_workbook = export_reader_deterministic_workbook(output_dir)
     shutil.copy2(reader_workbook, output_dir / "Simulating_sentinel_safe_products.xlsx")
